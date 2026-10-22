@@ -31,20 +31,23 @@ dưới đây gồm phần đã triển khai và phần còn phải kiểm chứ
 thực tế được ghi tại [đặc tả](specs/core-v1.md), [cách chạy](development.md) và
 [hồ sơ kiểm chứng](verification/core-v1-windows.md).
 
-### Cài cho người dùng thông thường — preview 0.1.1
+### Cài cho người dùng thông thường — preview 0.1.2
 
 - [x] Tách README thành hướng dẫn nhận/cài `.exe` và hướng dẫn developer chạy/build.
 - [x] Viết [đặc tả hai lớp cài đặt](specs/windows-installation.md) và
   [brief để duyệt](../design/windows-setup.md): bootstrap native trước WebView2,
   hướng dẫn trong app sau khi UI mở được.
 - [x] Tạo ba [ảnh bộ cài chờ review](../design/mockups/README.md#bộ-cài-môi-trường--review),
-  lưu prompt và metadata; chưa có bố cục được duyệt.
+  lưu prompt và metadata; mẫu 1 được duyệt ở bước kế tiếp.
 - [x] Chủ dự án chọn mẫu wizard 1, duyệt code và phát hành; xem [0006](decisions/0006-native-setup-release.md).
 - [x] Đã có wizard native bọc NSIS: hiển thị bước, tên thành phần,
   tiến trình thật hoặc thanh chờ, lỗi/thử lại/hủy phù hợp và kết quả xác minh.
 - [x] Mở app vào Môi trường hiện có; gói tùy chọn không tự cài.
 - [ ] Onboarding React riêng và CI phát hành tự động nếu cần về sau.
 - [x] Đóng gói/phát hành prerelease 0.1.1 với checksum và upstream notices.
+- [x] Trình gỡ NSIS đăng ký Windows Settings/Control Panel; giữ dữ liệu mặc định,
+  xác nhận khi xóa AppData; test file giả và guard silent/passive/update. Xem
+  [0007](decisions/0007-windows-uninstall-data.md) và [kiểm chứng 0.1.2](verification/windows-uninstall-0.1.2.md).
 - [ ] Kiểm thử máy Windows sạch không Git/Node/Rust/Build Tools, runtime có/thiếu,
   mạng bị ngắt, quyền, cài lại/nâng cấp/gỡ trước phát hành bộ cài.
 

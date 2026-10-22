@@ -1,6 +1,6 @@
 [package]
 name = "nuvokit"
-version = "0.1.1"
+version = "0.1.2"
 description = "NuvoKit Windows core"
 edition = "2021"
 default-run = "nuvokit"

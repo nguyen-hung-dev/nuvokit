@@ -265,8 +265,29 @@ namespace NuvoKit.Setup
                 if (!File.Exists(app)) throw new SetupFailure("Bộ cài chưa tạo được ứng dụng ở thư mục đã chọn.");
                 using (var data = File.OpenRead(app))
                     if (Hash(data) != BuildInfo.ApplicationHash) throw new SetupFailure("Ứng dụng sau cài chưa khớp SHA-256. Vui lòng thử lại.");
+                VerifyUninstallRegistration(target);
             }
             finally { DeleteTemporaryDirectory(temporary); }
+        }
+
+        public static bool MatchesUninstallRegistration(string target, string command, string quietCommand, string version)
+        {
+            string expected = "\"" + Path.Combine(target, "uninstall.exe") + "\"";
+            return String.Equals(command, expected, StringComparison.OrdinalIgnoreCase)
+                && String.Equals(quietCommand, expected + " /S", StringComparison.OrdinalIgnoreCase)
+                && version == BuildInfo.Version;
+        }
+
+        private static void VerifyUninstallRegistration(string target)
+        {
+            if (!File.Exists(Path.Combine(target, "uninstall.exe")))
+                throw new SetupFailure("Chưa tạo được trình gỡ NuvoKit. Hãy chạy lại bộ cài.");
+            foreach (RegistryView view in new[] { RegistryView.Registry64, RegistryView.Registry32 })
+                using (RegistryKey root = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, view))
+                using (RegistryKey key = root.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\NuvoKit"))
+                    if (key != null && MatchesUninstallRegistration(target, key.GetValue("UninstallString") as string,
+                        key.GetValue("QuietUninstallString") as string, key.GetValue("DisplayVersion") as string)) return;
+            throw new SetupFailure("Chưa đăng ký đầy đủ chức năng gỡ với Windows. Hãy chạy lại bộ cài.");
         }
 
         private static string NewTemporaryDirectory()

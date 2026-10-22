@@ -55,16 +55,16 @@ Tại thư mục gốc repo, sau khi `npm ci` hoàn tất:
 
 ```powershell
 npm run desktop:bundle
-Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.1_x64-setup.exe" -Wait
+Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.2_x64-setup.exe" -Wait
 ```
 
 Chỉ chạy lệnh mở bộ cài nếu build thành công. Bộ cài NSIS dùng chế độ current-user;
 làm theo wizard để cài rồi mở NuvoKit từ Start menu. Nếu thiếu WebView2, installer
 tải bootstrapper qua Internet. Node/Rust/Build Tools chỉ cần cho máy build.
-Tên file trên tương ứng version `0.1.1` trong cấu hình Tauri; version sau sẽ có tên
+Tên file trên tương ứng version `0.1.2` trong cấu hình Tauri; version sau sẽ có tên
 khác. Hướng dẫn clone từ GitHub nằm trong phần nhà phát triển của [README](../README.vi.md).
-Bản preview trên [Releases](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.1)
-chưa ký số. Xem [kiểm chứng](verification/windows-setup-0.1.1.md) trước khi suy ra
+Bản preview trên [Releases](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.2)
+chưa ký số. Xem [kiểm chứng](verification/windows-uninstall-0.1.2.md) trước khi suy ra
 khả năng trên Windows sạch. Payload NSIS trong `target/` chỉ dành cho wrapper;
 phân phối file GUI ở `output/windows-setup/`.
 
@@ -80,6 +80,11 @@ Payload raw trong `target/` bỏ bootstrap WebView2 vì wizard xử lý trước
 phối GUI `.exe`. Registry/runtime/payload được kiểm tra lại khi chạy tiếp/thử lại.
 QA helper integration chỉ dành cho Sandbox dùng một lần; không chạy trên profile
 cá nhân vì nó thử cài lại và gỡ app. Các output/test captures đều bị ignore.
+
+Sau khi bundle, chạy `npm run uninstall:test` để kiểm tra NSIS trên file giả trong
+`output/uninstall-qa/` và tên registry ngẫu nhiên. Bài test không đụng bản cài hoặc
+AppData NuvoKit thật. Nó kiểm tra giữ/xóa dữ liệu và đăng ký gỡ, không nhấn các hộp
+xác nhận xóa qua UI; xem [phạm vi](verification/windows-uninstall-0.1.2.md).
 
 ## Kiểm chứng native không mở cổng debug
 

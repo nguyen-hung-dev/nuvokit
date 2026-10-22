@@ -1,4 +1,4 @@
-# Đặc tả — Windows Setup 0.1.1
+# Đặc tả — Windows Setup 0.1.2
 
 Cập nhật: **23/10/2026**. Trạng thái: **mẫu 1 đã duyệt, wizard native đã triển khai**.
 Nguồn quyết định hiện tại: [0006](../decisions/0006-native-setup-release.md); phạm vi
@@ -72,6 +72,15 @@ gói/runtime không xác minh được; installer lỗi; người dùng hủy; a
 cần reboot. Lỗi không được hiển thị như đã hoàn tất.
 
 ## Phần cần hoàn thiện tiếp
+
+Trình gỡ native NSIS đã có đăng ký với Windows Settings/Control Panel. Bản 0.1.2
+thêm thông điệp Việt/Anh, lệnh quiet riêng, lưu ngôn ngữ và kiểm tra đăng ký sau
+cài. Mặc định giữ dữ liệu; chỉ xóa AppData tài khoản hiện tại khi chọn ô xóa và
+xác nhận cảnh báo. Silent/passive/update luôn giữ; WebView2 dùng chung không bị gỡ.
+Xem [quyết định 0007](../decisions/0007-windows-uninstall-data.md),
+[hướng dẫn](../installation.md#gỡ-qua-windows-và-lựa-chọn-dữ-liệu) và
+[test fixture 0.1.2](../verification/windows-uninstall-0.1.2.md). Bảng 0.1.1 phía trên
+ghi phạm vi baseline trước thay đổi này.
 
 - Mẫu 1 đã duyệt và triển khai. Các trạng thái dùng native controls, có thay đổi
   nhỏ về caption/viền so với ảnh; xem [design QA](../../design-qa.md).

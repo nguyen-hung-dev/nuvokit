@@ -8,12 +8,18 @@ The main NuvoKit application stays in Tauri/Rust.
 - `WindowsOperations.cs`: Windows/path/disk checks, Microsoft HTTPS download and
   Authenticode verification, embedded NSIS extraction, process waits and file hashes.
 - `Program.cs`: native wizard, progress, retry/location correction, details and launch.
+- The payload uses Tauri's native NSIS uninstaller, registered with Windows Apps
+  and Control Panel. `src-tauri/windows/` adds Vietnamese messages, a confirmation
+  before explicit data deletion, and silent/update preservation guards.
 - `Tests.cs`: compiled only into a separate QA executable; never into the release.
 - `upstream-licenses/`: pinned license texts missing from registry crate packages,
   with source/checksum metadata. These do not license NuvoKit itself.
 
 From repository root: `npm run setup:test` and `npm run desktop:bundle`.
-The public installer is `output/windows-setup/NuvoKit_0.1.1_x64-setup.exe`.
+After bundling, `npm run uninstall:test` exercises generated NSIS cleanup using
+isolated synthetic files and a unique test registration; it never modifies the
+real NuvoKit installation or AppData. It does not click destructive GUI dialogs.
+The installer is `output/windows-setup/NuvoKit_0.1.2_x64-setup.exe`.
 Do not distribute the raw NSIS payload from `target/` on its own.
 
 The production executable accepts only normal GUI startup or read-only

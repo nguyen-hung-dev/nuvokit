@@ -11,6 +11,7 @@ quyết định đã chốt. Gợi ý trong tài liệu không tự trở thành
 | [0004](0004-public-source-repository.md) | Repository GitHub công khai, chỉ đưa nội dung dự án đã rà soát | Accepted — 22/10/2026 |
 | [0005](0005-installation-design-review.md) | Tách cài `.exe`/developer; chỉ tài liệu và design, duyệt trước code | Accepted về phạm vi — 22/10/2026 |
 | [0006](0006-native-setup-release.md) | Duyệt mẫu 1, bootstrapper native + NSIS và phát hành preview `.exe` | Accepted — 23/10/2026 |
+| [0007](0007-windows-uninstall-data.md) | Gỡ qua Windows, giữ dữ liệu mặc định và xác nhận khi xóa | Accepted — 23/10/2026 |
 
 ## Quyết định còn mở
 

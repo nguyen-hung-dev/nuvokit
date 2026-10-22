@@ -20,6 +20,9 @@
   Read `docs/decisions/0006-native-setup-release.md` and the installation specification.
   Keep the native bootstrap UI independent of WebView2. Publish installers as Release
   assets; keep build output and machine data outside source commits.
+- Uninstall/data policy is recorded in `docs/decisions/0007-windows-uninstall-data.md`.
+  Preserve data by default and during quiet/passive/update modes. Run uninstall QA
+  with isolated fixtures; never remove the user's installed app or real AppData.
 
 ## CodeGraph
 

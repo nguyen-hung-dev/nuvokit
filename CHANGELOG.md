@@ -2,12 +2,23 @@
 
 ## Unreleased
 
+## 0.1.2 — 2026-10-23 (Windows preview)
+
+- Keep the native Windows Apps/Control Panel uninstaller, with Vietnamese messages,
+  an extra confirmation for permanent AppData deletion and explicit silent/update preservation.
+- Record quiet-uninstall/help metadata and the installer language; verify registration
+  and the uninstaller file before the outer wizard reports success.
+- 48 setup assertions and four isolated NSIS cleanup/preservation scenarios; no
+  real NuvoKit installation or user data removed during QA.
+- Document the exact data scope and upgrade path for existing installations.
+- Set TypeScript `noEmit` in the shared config so VS Code and CLI agree.
+
 ## 0.1.1 — 2026-10-23 (Windows preview)
 
 - Native setup wizard matching approved image 1; Windows/path/disk checks,
   Microsoft WebView2 verification, embedded NSIS install, retry and post-install hashes.
 - Single-file unsigned `.exe` prerelease, SHA-256 checksums and upstream notices.
-- 41 setup assertions, existing core/native checks and explicit clean-machine QA limits.
+- 43 setup assertions, existing core/native checks and explicit clean-machine QA limits.
 - User `.exe` and developer source instructions; private vulnerability reporting enabled.
 
 ## 0.1.0 — internal prototype (not published)

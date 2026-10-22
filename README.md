@@ -9,7 +9,7 @@ connected data, and optional AI.
 
 ## Status
 
-**Windows preview 0.1.1 — October 23, 2026.** A React/TypeScript + Tauri/Rust
+**Windows preview 0.1.2 — October 23, 2026.** A React/TypeScript + Tauri/Rust
 application now provides environment checks, hardware inventory, light/dark themes,
 SQLite preferences/history, and a managed optional language-data download.
 Browser mode is a clearly labelled design preview with synthetic hardware data.
@@ -29,7 +29,7 @@ an open-source license has not been selected or granted yet.
 The preview targets **Windows 11 x64**. An installed build does not need Git,
 Node.js/npm, Rust, or Visual Studio. No terminal commands are required.
 
-**Download:** [NuvoKit 0.1.1 x64 Setup](https://github.com/nguyen-hung-dev/nuvokit/releases/download/v0.1.1/NuvoKit_0.1.1_x64-setup.exe) · [Release notes](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.1). This is an unsigned preview. The source-code ZIP is not an installer.
+**Download:** [NuvoKit 0.1.2 x64 Setup](https://github.com/nguyen-hung-dev/nuvokit/releases/download/v0.1.2/NuvoKit_0.1.2_x64-setup.exe) · [Release notes](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.2). This is an unsigned preview. The source-code ZIP is not an installer.
 
 1. Obtain `NuvoKit_<version>_x64-setup.exe` from the project's release or owner.
 2. Double-click it, choose the installation folder, and follow the setup wizard.
@@ -40,7 +40,14 @@ Node.js/npm, Rust, or Visual Studio. No terminal commands are required.
 The native wizard checks Windows, the installation folder and free space; prepares
 WebView2 if needed; then installs and verifies NuvoKit. It shows named steps, real
 download progress when available, and a waiting indicator during external installers.
-Read the [user guide](docs/installation.md) and [verification limits](docs/verification/windows-setup-0.1.1.md).
+Read the [user guide](docs/installation.md) and [verification limits](docs/verification/windows-uninstall-0.1.2.md).
+
+To uninstall, use **Windows Settings → Apps → Installed apps → NuvoKit → Uninstall**
+or **Control Panel → Programs and Features**. The native uninstaller keeps data by
+default. Select **Delete the application data** to remove this user's NuvoKit
+settings, history, downloaded packages and cache, then confirm the warning.
+Shared WebView2 and exported files outside AppData are kept. Install this version
+over an older build to update its uninstaller while preserving existing data.
 
 ### Developers: run and build from source
 
@@ -64,10 +71,10 @@ npm run desktop:bundle
 Wait for the build to succeed before opening the installer:
 
 ```powershell
-Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.1_x64-setup.exe" -Wait
+Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.2_x64-setup.exe" -Wait
 ```
 
-The filename reflects the current version, `0.1.1`. Clone and build output stay in
+The filename reflects the current version, `0.1.2`. Clone and build output stay in
 the chosen repository folder; development caches and app data may use the user
 profile. Source checkouts share app data when they use the same app identifier.
 For a browser preview with synthetic data, run `npm run dev` and open

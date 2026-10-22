@@ -1,6 +1,6 @@
 {
   "name": "nuvokit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -21,6 +21,7 @@
     "desktop:bundle": "node scripts/build-windows-setup.mjs",
     "desktop:payload": "npm run check && npm run desktop:bundle --workspace=@nuvokit/desktop -- --config src-tauri/tauri.payload.conf.json",
     "setup:test": "node scripts/test-windows-setup.mjs",
+    "uninstall:test": "node scripts/test-windows-uninstall.mjs",
     "native:test": "cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml",
     "native:check": "cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml --all-targets -- -D warnings"
   },

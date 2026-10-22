@@ -95,6 +95,12 @@ namespace NuvoKit.Setup.Tests
                 Assert(rejected, "unsafe destination rejected: " + invalid);
             }
             Assert(WindowsOperations.NormalizeDirectory(@"E:\Apps\Nuvo Kit") == @"E:\Apps\Nuvo Kit", "paths with spaces");
+            string uninstall = "\"E:\\Apps\\Nuvo Kit\\uninstall.exe\"";
+            Assert(WindowsOperations.MatchesUninstallRegistration(@"E:\Apps\Nuvo Kit", uninstall, uninstall + " /S", BuildInfo.Version), "interactive and quiet uninstall registration");
+            Assert(!WindowsOperations.MatchesUninstallRegistration(@"E:\Apps\Nuvo Kit", uninstall + " /S", uninstall + " /S", BuildInfo.Version), "Windows uninstall must open GUI");
+            Assert(!WindowsOperations.MatchesUninstallRegistration(@"E:\Apps\Other", uninstall, uninstall + " /S", BuildInfo.Version), "registration must match installation folder");
+            Assert(!WindowsOperations.MatchesUninstallRegistration(@"E:\Apps\Nuvo Kit", uninstall, null, BuildInfo.Version), "quiet registration required");
+            Assert(!WindowsOperations.MatchesUninstallRegistration(@"E:\Apps\Nuvo Kit", uninstall, uninstall + " /S", "0.0.0"), "registration version must match build");
             Assert(WindowsOperations.AllowedMicrosoftUri(new Uri("https://go.microsoft.com/fwlink/p/?LinkId=2124703")), "Microsoft HTTPS allowed");
             foreach (string invalid in new[] { "http://go.microsoft.com/", "https://microsoft.com.evil.test/", "https://example.com/", "https://user@go.microsoft.com/", "https://go.microsoft.com:8443/" })
                 Assert(!WindowsOperations.AllowedMicrosoftUri(new Uri(invalid)), "redirect boundary");
