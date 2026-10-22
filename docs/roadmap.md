@@ -3,7 +3,8 @@
 Cập nhật: **23/10/2026**. Đã chốt **Windows trước, làm lõi trước mini-app**
 ([quyết định 0002](decisions/0002-windows-first-core.md)). Đã có Core v1 nội bộ và
 [stack đã chọn](decisions/0003-core-v1-stack.md). MVP mini-app/ngày phát hành còn mở.
-Giai đoạn 0 chưa hoàn tất QA trên Windows sạch và các điều kiện phát hành.
+Đã kiểm chứng một cấu hình Windows sạch bằng Sandbox; giai đoạn 0 còn QA máy vật
+lý, RAM và các điều kiện phát hành.
 
 ## Nền tảng tài liệu đã tạo
 
@@ -31,7 +32,7 @@ dưới đây gồm phần đã triển khai và phần còn phải kiểm chứ
 thực tế được ghi tại [đặc tả](specs/core-v1.md), [cách chạy](development.md) và
 [hồ sơ kiểm chứng](verification/core-v1-windows.md).
 
-### Cài cho người dùng thông thường — preview 0.1.2
+### Cài cho người dùng thông thường — preview 0.1.3
 
 - [x] Tách README thành hướng dẫn nhận/cài `.exe` và hướng dẫn developer chạy/build.
 - [x] Viết [đặc tả hai lớp cài đặt](specs/windows-installation.md) và
@@ -48,8 +49,11 @@ thực tế được ghi tại [đặc tả](specs/core-v1.md), [cách chạy](d
 - [x] Trình gỡ NSIS đăng ký Windows Settings/Control Panel; giữ dữ liệu mặc định,
   xác nhận khi xóa AppData; test file giả và guard silent/passive/update. Xem
   [0007](decisions/0007-windows-uninstall-data.md) và [kiểm chứng 0.1.2](verification/windows-uninstall-0.1.2.md).
-- [ ] Kiểm thử máy Windows sạch không Git/Node/Rust/Build Tools, runtime có/thiếu,
-  mạng bị ngắt, quyền, cài lại/nâng cấp/gỡ trước phát hành bộ cài.
+- [x] Kiểm chứng Windows Sandbox sạch không Git/Node/Rust/Build Tools: thiếu runtime,
+  cài WebView2 thật, nâng cấp 0.1.2, cài lại, mở renderer và gỡ giữ dữ liệu; offline
+  thiếu runtime báo lỗi đúng. Xem [kiểm chứng 0.1.3](verification/core-data-0.1.3.md).
+- [ ] Mở rộng máy vật lý, nhiều tài khoản, DPI/bàn phím, quyền, hết đĩa và mất mạng
+  giữa quá trình tải/cài; hoàn thiện ký số và CI phát hành.
 
 Wizard đã triển khai sau duyệt. Xem [bằng chứng 0.1.1](verification/windows-setup-0.1.1.md):
 43 kiểm tra Setup, 6 test nghiệp vụ, 10 test Rust đạt; chưa thay thế QA Windows sạch.
@@ -61,9 +65,10 @@ Wizard đã triển khai sau duyệt. Xem [bằng chứng 0.1.1](verification/wi
   UI kit/theme; có trạng thái đang kiểm tra, sẵn sàng, thiếu, không hỗ trợ và lỗi.
 - [x] Tách UI/nghiệp vụ khỏi dịch vụ hệ điều hành qua hợp đồng/schema và quyền;
   đã có adapter Windows và web preview. Adapter macOS thực vẫn là việc về sau.
-- [ ] Đặc tả lưu trữ cấu hình/trạng thái lõi, migration, log chẩn đoán local và
-  backup/phục hồi trước khi các mini-app bắt đầu phụ thuộc vào lõi.
-  SQLite schema v1, theme và lịch sử job đã có; backup/export còn lại.
+- [x] SQLite schema v2, migration từ v1, backup/export toàn bộ theme/lịch sử, preview
+  restore, bản phục hồi và dọn file tạm; [hợp đồng dữ liệu](specs/core-data.md).
+- [ ] Hợp đồng dữ liệu từng mini-app và log chẩn đoán được lược bỏ thông tin cá nhân
+  trước khi mở SDK; không coi backup lõi hiện tại là backup dữ liệu mini-app chưa có.
 
 ### Kiểm tra môi trường và nhận diện phần cứng
 
@@ -80,8 +85,8 @@ Wizard đã triển khai sau duyệt. Xem [bằng chứng 0.1.1](verification/wi
 
 - [x] Danh mục đầu tiên cho Windows x64: WebView2, SQLite tích hợp và gói ngôn ngữ
   OCR tùy chọn được pin phiên bản/hash; engine và runtime khác chưa tích hợp.
-- [ ] Kiểm chứng bootstrap WebView2 trên Windows sạch. Bộ cài NSIS đã cấu hình
-  bootstrap trước khi mở UI, chưa thử trường hợp máy thiếu WebView2.
+- [x] Bootstrap WebView2 trên Sandbox Windows sạch thiếu runtime; offline thiếu
+  runtime dừng đúng bước và giữ dữ liệu. Máy vật lý còn cần kiểm chứng.
 - [x] Hiển thị thành phần sẽ cài, mục đích, dung lượng, nguồn và quyền cần thiết;
   người dùng chọn cài và app thực hiện tải/cài/kiểm tra lại ngay trong giao diện.
 - [x] Tiến trình/channel, hủy, thử lại, lịch sử và phục hồi cho gói dữ liệu đầu tiên;
@@ -92,7 +97,8 @@ Wizard đã triển khai sau duyệt. Xem [bằng chứng 0.1.1](verification/wi
 - [ ] Chuẩn hóa kiểm tra chữ ký cho executable/runtime về sau; ưu tiên đóng gói hoặc
   nằm trong vùng dữ liệu app. Thay đổi hệ thống cần quyền phù hợp và được nêu rõ.
 - [x] App lõi không phụ thuộc gói OCR/AI hoặc toolchain phát triển để mở executable.
-- [ ] Kiểm chứng riêng trên máy không GPU và Windows sạch.
+- [x] Chạy renderer/lõi trên Windows sạch với vGPU Sandbox tắt.
+- [ ] Kiểm chứng máy vật lý không GPU rời và các cấu hình yếu.
 
 ### Dịch vụ nền và điều kiện hoàn thành
 

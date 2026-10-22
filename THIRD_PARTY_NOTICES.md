@@ -15,8 +15,11 @@ optional dependency and does not grant a license to NuvoKit.
 
 Node/Rust dependency versions and their upstream metadata are recorded in
 `package-lock.json` and `apps/desktop/src-tauri/Cargo.lock`. Review all dependency
-notices when changing dependencies. The 0.1.1 preview installs a generated
+notices when changing dependencies. Preview installers include a generated
 `THIRD_PARTY_LICENSES.txt` beside the application and includes it in Release assets.
 The collector includes upstream source links and registry license texts; missing
 crate-package texts are preserved with provenance/checksums in
 `apps/windows-setup/upstream-licenses/`. No NuvoKit license is chosen by this process.
+
+Native backup/restore file dialogs use `rfd` 0.17.2 (MIT); its upstream metadata
+and license text are included by the same release collector.

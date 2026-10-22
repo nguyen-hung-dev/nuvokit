@@ -89,15 +89,18 @@ Giấy phép thành phần Apache-2.0 đi kèm gói; không phải giấy phép 
 
 ## Lưu trữ và ranh giới
 
-SQLite schema v1: `preferences` và `job_history`; dữ liệu phiên bản mới hơn bị từ
-chối để tránh hạ cấp. Theme chỉ nhận `light`/`dark`, tồn tại qua lần mở lại. Lịch sử
-chỉ lưu ID job, loại gói, trạng thái, thời gian; UI hiện 20 mục gần nhất.
+SQLite schema v2: `preferences`, `job_history`, migration log và data maintenance log.
+Schema v1 được nâng cấp bằng transaction sau khi giữ snapshot `.nuvobak`; phiên
+bản mới hơn vẫn bị từ chối để tránh hạ cấp. Theme chỉ nhận `light`/`dark`, tồn tại
+qua lần mở lại. Lịch sử chỉ lưu ID job, loại gói, trạng thái, thời gian; UI hiện 20
+mục gần nhất, backup giữ toàn bộ. Xem [hợp đồng dữ liệu](core-data.md).
 
-Chỉ local main window được cấp sáu command chức năng và hai command ready/kiểm
+Chỉ local main window được cấp 13 command chức năng và hai command ready/kiểm
 chứng nội bộ. Command kiểm chứng chỉ hoạt động khi có cờ `--verify-core` lúc mở app.
 Không bật shell, HTTP, filesystem
 hoặc tải remote UI ở frontend. Mini-app bên thứ ba/SDK runtime chưa thuộc bản này.
-Chưa có backup/export UI, cloud sync, tự cập nhật app hay chứng nhận Store.
+Cài đặt có backup/restore, dung lượng và dọn tạm. Cloud sync, tự cập nhật app và
+chứng nhận Store chưa triển khai.
 
 ## Ngưỡng PoC đặt trước khi đo
 

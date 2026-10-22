@@ -64,11 +64,11 @@ namespace NuvoKit.Setup.Tests
             try
             {
                 if (args.Length >= 2 && args[0] == "--capture") { Capture(args[1], args[2]); return 0; }
-                if (args.Length == 3 && args[0] == "--integration")
+                if (args.Length == 3 && (args[0] == "--integration" || args[0] == "--integration-offline"))
                 {
                     if (Environment.GetEnvironmentVariable("NUVOKIT_SANDBOX_QA") != "1" || !Environment.UserName.Equals("WDAGUtilityAccount", StringComparison.OrdinalIgnoreCase))
                         throw new Exception("Integration install/uninstall is restricted to the disposable WDAG Sandbox profile with NUVOKIT_SANDBOX_QA=1.");
-                    Integration(args[1], args[2]); return 0;
+                    Integration(args[1], args[2], args[0] == "--integration-offline"); return 0;
                 }
                 if (args.Length == 2 && args[0] == "--signature") { WindowsOperations.VerifyMicrosoftSignature(args[1]); Console.WriteLine("Microsoft signature verified"); return 0; }
                 Tests().GetAwaiter().GetResult();
@@ -148,7 +148,7 @@ namespace NuvoKit.Setup.Tests
         private static Control Find(Control root, string name)
         { return root.Controls.Find(name, true).Single(); }
 
-        private static void Integration(string target, string resultFile)
+        private static void Integration(string target, string resultFile, bool offline)
         {
             // Compiled only into the QA helper. Run in Windows Sandbox, never on
             // a personal profile: this installs, reinstalls and uninstalls.
@@ -161,6 +161,35 @@ namespace NuvoKit.Setup.Tests
                 Directory.CreateDirectory(data);
                 string marker = Path.Combine(data, "qa-preserve-marker.txt");
                 File.WriteAllText(marker, "synthetic preservation marker");
+                if (offline && !initial)
+                {
+                    operations.Check(target);
+                    Assert(WindowsOperations.EmbeddedPayloadValid(), "offline payload is intact");
+                    bool rejected = false;
+                    try { controller.Run(target, new Immediate(), CancellationToken.None).GetAwaiter().GetResult(); }
+                    catch (Exception) { rejected = true; }
+                    Assert(rejected && !File.Exists(Path.Combine(target, "nuvokit.exe")), "offline missing runtime cannot install incomplete app");
+                    Assert(File.ReadAllText(marker) == "synthetic preservation marker", "offline failure preserves data");
+                    File.WriteAllText(resultFile, "{\"success\":true,\"runtimeInitiallyPresent\":false,\"offlineRuntimeFailureHandled\":true,\"installedCoreSmoke\":false,\"dataPreserved\":true}");
+                    return;
+                }
+                bool upgraded = false;
+                using (var prior = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NuvoKit.PreviousPayload"))
+                {
+                    if (prior != null)
+                    {
+                        string oldPayload = Path.Combine(Path.GetTempPath(), "nuvokit-prior-" + Guid.NewGuid().ToString("N") + ".exe");
+                        try
+                        {
+                            using (var file = new FileStream(oldPayload, FileMode.CreateNew, FileAccess.Write)) prior.CopyTo(file);
+                            using (var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(oldPayload, "/S /D=" + target) { UseShellExecute = false, CreateNoWindow = true }))
+                            { process.WaitForExit(); Assert(process.ExitCode == 0, "pinned prior version installation"); }
+                            Assert(File.Exists(Path.Combine(target, "nuvokit.exe")), "prior executable present before upgrade");
+                            upgraded = true;
+                        }
+                        finally { if (File.Exists(oldPayload)) File.Delete(oldPayload); }
+                    }
+                }
                 controller.Run(target, new Immediate(), CancellationToken.None).GetAwaiter().GetResult();
                 controller.Run(target, new Immediate(), CancellationToken.None).GetAwaiter().GetResult();
                 Assert(File.ReadAllText(marker) == "synthetic preservation marker", "reinstall preserves data");
@@ -171,11 +200,31 @@ namespace NuvoKit.Setup.Tests
                     process.WaitForExit();
                     Assert(process.ExitCode == 0 && output.Contains("\"webviewReady\":true"), "installed native core smoke");
                 }
+                var dataCheck = new System.Diagnostics.ProcessStartInfo(Path.Combine(target, "nuvokit.exe"), "--verify-data") { UseShellExecute = false, RedirectStandardOutput = true, CreateNoWindow = true };
+                using (var process = System.Diagnostics.Process.Start(dataCheck))
+                {
+                    string output = process.StandardOutput.ReadToEnd(); process.WaitForExit();
+                    Assert(process.ExitCode == 0 && output.Contains("\"dataVerificationPassed\":true"), "installed core data roundtrip");
+                }
+                bool rendererVerified = false, memoryBudgetMet = false;
+                if (!offline)
+                {
+                    var renderer = new System.Diagnostics.ProcessStartInfo(Path.Combine(target, "nuvokit.exe"), "--verify-core") { UseShellExecute = false, RedirectStandardOutput = true, CreateNoWindow = true };
+                    using (var process = System.Diagnostics.Process.Start(renderer))
+                    {
+                        string output = process.StandardOutput.ReadToEnd(); process.WaitForExit();
+                        rendererVerified = System.Text.RegularExpressions.Regex.Matches(output, "\"uiReadyMs\":[1-9][0-9]*").Count == 2
+                            && output.Contains("\"phase\":\"post-gpu\"") && output.Contains("\"themePersistence\":true")
+                            && output.Contains("\"optionalInstallVerified\":true");
+                        memoryBudgetMet = rendererVerified && !output.Contains("\"memoryBudgetMet\":false");
+                        Assert(rendererVerified, "installed WebView renderer, storage IPC, package channel and theme persistence");
+                    }
+                }
                 using (var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Path.Combine(target, "uninstall.exe"), "/S _?=" + target) { UseShellExecute = false, CreateNoWindow = true }))
                 { process.WaitForExit(); Assert(process.ExitCode == 0, "uninstall exit"); }
                 Assert(!File.Exists(Path.Combine(target, "nuvokit.exe")), "uninstall removes program");
                 Assert(File.Exists(marker), "uninstall preserves user data by default");
-                File.WriteAllText(resultFile, "{\"success\":true,\"runtimeInitiallyPresent\":" + (initial ? "true" : "false") + ",\"reinstall\":true,\"installedCoreSmoke\":true,\"uninstall\":true,\"dataPreserved\":true}");
+                File.WriteAllText(resultFile, "{\"success\":true,\"runtimeInitiallyPresent\":" + (initial ? "true" : "false") + ",\"upgradedFromPrevious\":" + (upgraded ? "true" : "false") + ",\"reinstall\":true,\"installedCoreSmoke\":true,\"dataRoundtrip\":true,\"installedRenderer\":" + (rendererVerified ? "true" : "false") + ",\"memoryBudgetMet\":" + (memoryBudgetMet ? "true" : "false") + ",\"uninstall\":true,\"dataPreserved\":true}");
             }
             catch (Exception error)
             {

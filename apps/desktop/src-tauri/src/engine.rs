@@ -1,4 +1,4 @@
-use crate::{model::*, platform, store::Store};
+use crate::{backup::Bundle, model::*, platform, store::Store};
 use sha2::{Digest, Sha256};
 use std::{
     fs::{self, File},
@@ -20,6 +20,13 @@ pub struct Engine {
     pub root: PathBuf,
     pub store: Store,
     active: Mutex<Option<Arc<AtomicBool>>>,
+    pub(crate) pending_restore: Mutex<Option<(String, Bundle)>>,
+}
+pub struct Maintenance<'a>(&'a Engine);
+impl Drop for Maintenance<'_> {
+    fn drop(&mut self) {
+        self.0.release();
+    }
 }
 impl Engine {
     pub fn new(root: PathBuf) -> Result<Self, String> {
@@ -28,6 +35,7 @@ impl Engine {
             root,
             store,
             active: Mutex::new(None),
+            pending_restore: Mutex::new(None),
         };
         let target = engine.package_path();
         let backup = target.with_extension("previous");
@@ -45,6 +53,17 @@ impl Engine {
             .join("dependencies")
             .join(PACKAGE_ID)
             .join("vie.traineddata")
+    }
+    pub fn maintenance(&self) -> Result<Maintenance<'_>, String> {
+        let mut active = self
+            .active
+            .lock()
+            .map_err(|_| "Không đọc được trạng thái tác vụ.")?;
+        if active.is_some() {
+            return Err("Đang cài hoặc xử lý dữ liệu. Chờ tác vụ hoàn tất rồi thử lại.".into());
+        }
+        *active = Some(Arc::new(AtomicBool::new(false)));
+        Ok(Maintenance(self))
     }
     pub fn scan(&self) -> EnvironmentReport {
         let version = platform::webview_version();

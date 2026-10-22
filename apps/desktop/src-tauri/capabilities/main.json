@@ -4,6 +4,13 @@
   "description": "Only the local main app window may call the versioned core commands.",
   "windows": ["main"],
   "permissions": [
+    "allow-get-storage-info",
+    "allow-export-backup",
+    "allow-prepare-restore",
+    "allow-discard-restore",
+    "allow-restore-backup",
+    "allow-clear-temporary-data",
+    "allow-open-data-folder",
     "allow-scan-environment",
     "allow-install-dependency",
     "allow-cancel-install",

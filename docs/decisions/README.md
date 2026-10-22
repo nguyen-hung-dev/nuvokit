@@ -12,6 +12,7 @@ quyết định đã chốt. Gợi ý trong tài liệu không tự trở thành
 | [0005](0005-installation-design-review.md) | Tách cài `.exe`/developer; chỉ tài liệu và design, duyệt trước code | Accepted về phạm vi — 22/10/2026 |
 | [0006](0006-native-setup-release.md) | Duyệt mẫu 1, bootstrapper native + NSIS và phát hành preview `.exe` | Accepted — 23/10/2026 |
 | [0007](0007-windows-uninstall-data.md) | Gỡ qua Windows, giữ dữ liệu mặc định và xác nhận khi xóa | Accepted — 23/10/2026 |
+| [0008](0008-core-data-safety.md) | Backup/restore, migration và kiểm chứng Windows trước mini-app | Accepted — 23/10/2026 |
 
 ## Quyết định còn mở
 

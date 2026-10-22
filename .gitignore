@@ -59,6 +59,8 @@ models/
 *.sqlite-*
 *.sqlite3
 *.sqlite3-*
+*.nuvobak
+.nuvokit-*.tmp
 *.onnx
 *.gguf
 *.safetensors

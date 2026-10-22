@@ -1,4 +1,4 @@
-# Đặc tả — Windows Setup 0.1.2
+# Đặc tả — Windows Setup 0.1.3
 
 Cập nhật: **23/10/2026**. Trạng thái: **mẫu 1 đã duyệt, wizard native đã triển khai**.
 Nguồn quyết định hiện tại: [0006](../decisions/0006-native-setup-release.md); phạm vi
@@ -16,6 +16,16 @@ hoặc tự cài toolchain. Bản preview 0.1.1 được phép phát hành; xem 
 | App | Giữ bốn trang; lần mở đầu vào Môi trường, OCR tùy chọn có progress | Onboarding riêng và thêm engines về sau |
 | Phân phối | Source công khai, GitHub prerelease `.exe` + checksum/notices | Ký số, CI phát hành và kênh Store |
 | Kiểm thử | 43 kiểm tra Setup, 6 test nghiệp vụ, 10 test Rust; chủ dự án đã cài/mở bản trước từ Git | Windows sạch không toolchain, thiếu WebView2 và toàn luồng nâng cấp/gỡ |
+
+## Kiểm chứng bổ sung ở 0.1.3
+
+Baseline 0.1.1 trong bảng trên được giữ để phân biệt lịch sử. Bản 0.1.3 đã kiểm
+chứng trên Windows Sandbox sạch, không toolchain, thiếu WebView2: cài runtime thật,
+nâng cấp payload 0.1.2, cài lại, chạy renderer/data và gỡ giữ dữ liệu. Nhánh offline
+thiếu runtime dừng với lỗi đúng, chưa cài app. Hash executable nay được chụp trong
+hook compile-time NSIS để khớp marker bundle của Tauri. Xem [bằng chứng và giới hạn
+0.1.3](../verification/core-data-0.1.3.md); máy vật lý, quyền/DPI và các nhánh lỗi
+giữa chừng còn mở.
 
 ## Hai lớp giao diện
 
@@ -57,8 +67,8 @@ mạng chỉ để xác nhận một thành phần local đã dùng được.
 - Nêu rõ bước chưa thể hủy. Chỉ bật hủy khi host hỗ trợ; không ép dừng installer
   hệ thống rồi coi là đã phục hồi.
 - Xác minh nguồn/chữ ký runtime theo cơ chế phù hợp trước chạy; kiểm tra exit code
-  và kiểm tra lại registry runtime sau cài. Đã có code; nhánh máy thiếu runtime
-  chưa có xác nhận đầy đủ trên máy sạch.
+  và kiểm tra lại registry runtime sau cài. Nhánh máy thiếu runtime đã qua trên
+  Sandbox Windows sạch ở 0.1.3.
 - Chạy lại kiểm tra phần đã có, giữ dữ liệu và tiếp tục an toàn. Không tự gỡ
   WebView2 dùng chung khi hủy cài NuvoKit.
 - Nếu cần tăng quyền, giải thích trước và dùng UAC chuẩn của Windows.
@@ -86,8 +96,8 @@ ghi phạm vi baseline trước thay đổi này.
   nhỏ về caption/viền so với ảnh; xem [design QA](../../design-qa.md).
 - Chưa tạo onboarding React riêng hoặc CI phát hành tự động.
 - Preview được phát hành với giới hạn kiểm chứng đã công bố.
-- Trước phát hành: thử Windows sạch, runtime có/thiếu, offline/hủy/lỗi/quyền,
-  cài lại/nâng cấp/gỡ, kiểm tra nguồn/chữ ký, bàn phím và DPI.
+- Mở rộng QA máy vật lý, runtime có sẵn, hủy/lỗi/quyền, nhiều tài khoản, bàn phím
+  và DPI; Sandbox mới kiểm chứng tập con nêu trong hồ sơ 0.1.3.
 
 ## Nguồn kỹ thuật
 

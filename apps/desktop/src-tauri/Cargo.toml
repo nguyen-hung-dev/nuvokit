@@ -1,6 +1,6 @@
 [package]
 name = "nuvokit"
-version = "0.1.2"
+version = "0.1.3"
 description = "NuvoKit Windows core"
 edition = "2021"
 default-run = "nuvokit"
@@ -22,6 +22,7 @@ rusqlite = { version = "0.38", features = ["bundled"] }
 reqwest = { version = "0.12", default-features = false, features = ["blocking", "rustls-tls"] }
 sha2 = "0.10"
 chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }
+rfd = { version = "=0.17.2", default-features = false }
 
 [target.'cfg(windows)'.dependencies]
 winreg = "0.55"

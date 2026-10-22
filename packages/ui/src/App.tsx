@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { DataSettings } from "./DataSettings";
 import {
   Activity,
   ArrowDownToLine,
@@ -217,6 +218,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
     theme: "light",
   });
   const [savingTheme, setSavingTheme] = useState(false);
+  const [dataBusy, setDataBusy] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [job, setJob] = useState<JobProgress | null>(null);
   const [selected, setSelected] = useState<Dependency | null>(null);
@@ -274,6 +276,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
           .uiReady()
           .then(async (verify) => {
             if (!verify) return;
+            if ((await adapter.getStorageInfo()).schemaVersion !== 2) throw new Error("Chưa xác minh được dữ liệu lõi phiên bản 2.");
             // Explicit --verify-core only: use normal adapters/IPC with a temporary host database.
             const original = await adapter.getPreferences();
             await adapter.setPreferences({ theme: "dark" });
@@ -320,7 +323,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
     }
   };
   const startInstall = async () => {
-    if (!selected || busy || adapter.mode !== "desktop") return;
+    if (!selected || busy || dataBusy || adapter.mode !== "desktop") return;
     const dependency = selected;
     setSelected(null);
     setError("");
@@ -415,7 +418,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
                 {dependency.installable ? (
                   <button
                     className="button secondary compact"
-                    disabled={busy || scanning}
+                    disabled={busy || dataBusy || scanning}
                     onClick={() => setSelected(dependency)}
                   >
                     <ArrowDownToLine size={16} />
@@ -529,7 +532,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
                 ? "Chuyển sang giao diện tối"
                 : "Chuyển sang giao diện sáng"
             }
-            disabled={savingTheme}
+            disabled={savingTheme || dataBusy}
             onClick={() =>
               void changeTheme(preferences.theme === "light" ? "dark" : "light")
             }
@@ -549,6 +552,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
             <button
               key={id}
               className={`nav-item ${page === id ? "active" : ""}`}
+              disabled={dataBusy}
               onClick={() => setPage(id)}
               aria-current={page === id ? "page" : undefined}
               title={label}
@@ -571,7 +575,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
               <span>Lưu trên thiết bị</span>
             </div>
           </div>
-          <span className="sidebar-version">NuvoKit · Core v0.1.2</span>
+          <span className="sidebar-version">NuvoKit · Core v0.1.3</span>
         </div>
       </aside>
       <main id="main-content" className="main-content">
@@ -823,7 +827,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
                         key={theme}
                         className={`theme-option ${preferences.theme === theme ? "selected" : ""}`}
                         onClick={() => void changeTheme(theme)}
-                        disabled={savingTheme}
+                        disabled={savingTheme || dataBusy}
                         aria-pressed={preferences.theme === theme}
                       >
                         <span className={`theme-preview ${theme}`}>
@@ -847,6 +851,11 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
                     ))}
                   </div>
                 </section>
+                <DataSettings adapter={adapter} installing={busy || savingTheme} onBusy={setDataBusy} onRestored={async (value) => {
+                  setPreferences(value);
+                  setHistory(await adapter.getHistory());
+                  await refresh();
+                }} />
                 <section className="panel">
                   <div className="section-heading">
                     <h2>
@@ -855,7 +864,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
                     </h2>
                   </div>
                   <p className="muted">
-                    NuvoKit Core v0.1.2 · bản preview cho Windows 11
+                    NuvoKit Core v0.1.3 · bản preview cho Windows 11
                     x64.
                   </p>
                   <div className="note">

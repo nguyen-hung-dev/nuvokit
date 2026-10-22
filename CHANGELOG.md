@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 0.1.3 — 2026-10-23 (Windows preview)
+
+- Settings data panel: export validated `.nuvobak`, preview/confirm restore,
+  storage groups, safe temporary-file cleanup and native folder/file dialogs.
+- Back up all core preferences/history; create recovery snapshots before restore
+  or schema 1 → 2 migration; use transactions and single-use restore approval.
+- Isolate diagnostic/temporary profiles, including SQLite and WebView storage.
+- Fix installed executable verification by capturing its SHA-256 during NSIS
+  compilation, while Tauri applies the bundle marker.
+- Verify the final installer in clean Windows Sandbox without developer tools:
+  missing WebView2, real 0.1.2 upgrade, reinstall, renderer/data and uninstall;
+  offline runtime failure preserves data. RAM target remains unmet.
+- 23 Rust tests, 6 domain tests, 48 setup assertions and 4 NSIS fixture scenarios.
+
 ## 0.1.2 — 2026-10-23 (Windows preview)
 
 - Keep the native Windows Apps/Control Panel uninstaller, with Vietnamese messages,

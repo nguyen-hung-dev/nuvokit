@@ -1,3 +1,5 @@
+mod backup;
+mod data;
 pub mod engine;
 pub mod model;
 mod platform;
@@ -7,6 +9,85 @@ use engine::Engine;
 use model::*;
 use std::sync::{atomic::Ordering, Arc};
 use tauri::{ipc::Channel, Manager, State};
+pub fn verify_data() -> Result<(), String> {
+    data::verify()
+}
+
+#[tauri::command]
+async fn get_storage_info(engine: State<'_, Arc<Engine>>) -> Result<data::StorageInfo, String> {
+    let engine = engine.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || engine.storage_info())
+        .await
+        .map_err(|_| "Không đọc được dung lượng dữ liệu.".to_string())?
+}
+#[tauri::command]
+async fn export_backup(
+    engine: State<'_, Arc<Engine>>,
+    window: tauri::WebviewWindow,
+) -> Result<bool, String> {
+    let engine = engine.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || {
+        let Some(path) = data::save_dialog(&window) else {
+            return Ok(false);
+        };
+        engine.export_to(&path)?;
+        Ok(true)
+    })
+    .await
+    .map_err(|_| "Không hoàn tất được sao lưu.".to_string())?
+}
+#[tauri::command]
+async fn prepare_restore(
+    engine: State<'_, Arc<Engine>>,
+    window: tauri::WebviewWindow,
+) -> Result<Option<data::RestorePreview>, String> {
+    let engine = engine.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || {
+        *engine
+            .pending_restore
+            .lock()
+            .map_err(|_| "Không đọc được bản xem trước.")? = None;
+        let Some(path) = data::restore_dialog(&window) else {
+            return Ok(None);
+        };
+        engine.preview_restore(&path).map(Some)
+    })
+    .await
+    .map_err(|_| "Không đọc được bản sao lưu.".to_string())?
+}
+#[tauri::command]
+fn discard_restore(engine: State<'_, Arc<Engine>>, token: String) -> Result<(), String> {
+    engine.discard_restore(&token)
+}
+#[tauri::command]
+async fn restore_backup(
+    engine: State<'_, Arc<Engine>>,
+    window: tauri::WebviewWindow,
+    token: String,
+) -> Result<data::RestoreResult, String> {
+    let engine = engine.inner().clone();
+    let result = tauri::async_runtime::spawn_blocking(move || engine.restore_preview(&token))
+        .await
+        .map_err(|_| "Không hoàn tất được khôi phục.".to_string())??;
+    let theme = if result.preferences.theme == "dark" {
+        tauri::Theme::Dark
+    } else {
+        tauri::Theme::Light
+    };
+    let _ = window.set_theme(Some(theme));
+    Ok(result)
+}
+#[tauri::command]
+async fn clear_temporary_data(engine: State<'_, Arc<Engine>>) -> Result<u64, String> {
+    let engine = engine.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || engine.clear_temporary())
+        .await
+        .map_err(|_| "Không dọn được file tạm.".to_string())?
+}
+#[tauri::command]
+fn open_data_folder(engine: State<'_, Arc<Engine>>) -> Result<(), String> {
+    data::open_folder(&engine.root)
+}
 
 #[tauri::command]
 async fn scan_environment(engine: State<'_, Arc<Engine>>) -> Result<EnvironmentReport, String> {
@@ -95,7 +176,7 @@ async fn finish_verification(
         let functional = startup > 0 && startup <= 3000 && report.scan_ms <= 5000 && cpu <= 2.0 && installed && report.os.supported && result.channel_events > 0 && result.theme_persistence;
         let baseline = result.phase == "baseline";
         let pass = functional && if baseline { memory <= 350.0 } else { runtime.baseline_passed.load(Ordering::SeqCst) };
-        println!("{}", serde_json::json!({ "phase": result.phase, "uiReadyMs": startup, "scanMs": report.scan_ms, "workingSetMiB": (memory * 10.0).round() / 10.0, "idleCpuPercent": (cpu * 100.0).round() / 100.0, "gpuStatus": result.gpu_status, "ipcChannelEvents": result.channel_events, "themePersistence": result.theme_persistence, "optionalInstallVerified": installed, "supportedOs": report.os.supported, "memoryBudgetMet": memory <= 350.0, "coreBudgetsPassed": pass }));
+        println!("{}", serde_json::json!({ "phase": result.phase, "uiReadyMs": startup, "scanMs": report.scan_ms, "workingSetMiB": (memory * 10.0).round() / 10.0, "idleCpuPercent": (cpu * 100.0).round() / 100.0, "gpuStatus": result.gpu_status, "ipcChannelEvents": result.channel_events, "themePersistence": result.theme_persistence, "optionalInstallVerified": installed, "supportedOs": report.os.supported, "memoryBudgetMet": memory <= 350.0, "functionalChecksPassed": functional, "coreBudgetsPassed": pass }));
         if baseline { runtime.baseline_passed.store(pass, Ordering::SeqCst); }
         else { runtime.completed.store(true, Ordering::SeqCst); app.exit(if pass { 0 } else { 1 }); }
     }).await.map_err(|_| "Không hoàn tất phép đo nội bộ.".to_string())?;
@@ -104,10 +185,16 @@ async fn finish_verification(
 
 pub fn run() {
     let verify = std::env::args().any(|arg| arg == "--verify-core");
+    let temporary = std::env::args().any(|arg| arg == "--temporary-profile");
     let runtime = Arc::new(verification::Runtime::new(verify));
-    let test_root = verify.then(|| {
+    let test_root = (verify || temporary).then(|| {
         std::env::temp_dir().join(format!(
-            "nuvokit-ui-{}-{}",
+            "{}-{}-{}",
+            if verify {
+                "nuvokit-ui"
+            } else {
+                "nuvokit-preview"
+            },
             std::process::id(),
             chrono::Utc::now().timestamp_nanos_opt().unwrap_or_default()
         ))
@@ -116,30 +203,29 @@ pub fn run() {
     let setup_runtime = runtime.clone();
     tauri::Builder::default()
         .setup(move |app| {
-            let engine = Arc::new(
-                Engine::new(
-                    setup_root
-                        .clone()
-                        .unwrap_or(app.path().app_local_data_dir()?),
-                )
-                .map_err(std::io::Error::other)?,
-            );
-            if let Some(window) = app.get_webview_window("main") {
-                let theme = if engine
-                    .store
-                    .preferences()
-                    .map_err(std::io::Error::other)?
-                    .theme
-                    == "dark"
-                {
-                    tauri::Theme::Dark
-                } else {
-                    tauri::Theme::Light
-                };
-                let _ = window.set_theme(Some(theme));
-            }
+            let root = match &setup_root {
+                Some(root) => root.clone(),
+                None => app.path().app_local_data_dir()?,
+            };
+            let engine = match Engine::new(root) {
+                Ok(engine) => Arc::new(engine),
+                Err(message) => {
+                    rfd::MessageDialog::new().set_title("NuvoKit cần kiểm tra dữ liệu")
+                        .set_description(format!("{}\n\nDữ liệu hiện có được giữ nguyên. Hãy đóng các bản NuvoKit khác và kiểm tra quyền/dung lượng. Nếu dữ liệu thuộc bản mới hơn, hãy cập nhật ứng dụng.", message))
+                        .set_level(rfd::MessageLevel::Error).set_buttons(rfd::MessageButtons::Ok).show();
+                    return Err(std::io::Error::other(message).into());
+                }
+            };
+            let theme = if engine.store.preferences().map_err(std::io::Error::other)?.theme == "dark" { tauri::Theme::Dark } else { tauri::Theme::Light };
             app.manage(engine);
             app.manage(setup_runtime.clone());
+            let mut window = tauri::WebviewWindowBuilder::from_config(app.handle(), &app.config().app.windows[0])?;
+            if let Some(root) = &setup_root {
+                // Isolate WebView cookies/localStorage/cache too, not just SQLite.
+                window = window.data_directory(root.join("webview"));
+            }
+            let window = window.build()?;
+            let _ = window.set_theme(Some(theme));
             if setup_runtime.verify {
                 let handle = app.handle().clone();
                 let watchdog = setup_runtime.clone();
@@ -154,6 +240,13 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            get_storage_info,
+            export_backup,
+            prepare_restore,
+            discard_restore,
+            restore_backup,
+            clear_temporary_data,
+            open_data_folder,
             scan_environment,
             install_dependency,
             cancel_install,

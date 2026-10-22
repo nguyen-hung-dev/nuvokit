@@ -59,6 +59,30 @@ export interface GpuProbe {
   message: string;
   elapsedMs: number;
 }
+export interface StorageInfo {
+  schemaVersion: number;
+  databaseBytes: number;
+  packageBytes: number;
+  temporaryBytes: number;
+  recoveryBytes: number;
+  recoveryCount: number;
+  lastBackupAt: string | null;
+  dataDirectory: string;
+  temporarySession: boolean;
+}
+export interface RestorePreview {
+  token: string;
+  fileName: string;
+  createdAt: string;
+  appVersion: string;
+  schemaVersion: number;
+  historyEntries: number;
+  theme: Preferences["theme"];
+}
+export interface RestoreResult {
+  preferences: Preferences;
+  recoveryFile: string;
+}
 export interface CoreAdapter {
   readonly mode: "desktop" | "preview";
   scan(): Promise<EnvironmentReport>;
@@ -70,6 +94,13 @@ export interface CoreAdapter {
   getPreferences(): Promise<Preferences>;
   setPreferences(preferences: Preferences): Promise<void>;
   getHistory(): Promise<HistoryEntry[]>;
+  getStorageInfo(): Promise<StorageInfo>;
+  exportBackup(): Promise<boolean>;
+  prepareRestore(): Promise<RestorePreview | null>;
+  discardRestore(token: string): Promise<void>;
+  restoreBackup(token: string): Promise<RestoreResult>;
+  clearTemporaryData(): Promise<number>;
+  openDataFolder(): Promise<void>;
   probeGpu(): Promise<GpuProbe>;
   uiReady(): Promise<boolean>;
   finishVerification(result: {

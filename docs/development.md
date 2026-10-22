@@ -55,16 +55,16 @@ Tại thư mục gốc repo, sau khi `npm ci` hoàn tất:
 
 ```powershell
 npm run desktop:bundle
-Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.2_x64-setup.exe" -Wait
+Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.3_x64-setup.exe" -Wait
 ```
 
 Chỉ chạy lệnh mở bộ cài nếu build thành công. Bộ cài NSIS dùng chế độ current-user;
 làm theo wizard để cài rồi mở NuvoKit từ Start menu. Nếu thiếu WebView2, installer
 tải bootstrapper qua Internet. Node/Rust/Build Tools chỉ cần cho máy build.
-Tên file trên tương ứng version `0.1.2` trong cấu hình Tauri; version sau sẽ có tên
+Tên file trên tương ứng version `0.1.3` trong cấu hình Tauri; version sau sẽ có tên
 khác. Hướng dẫn clone từ GitHub nằm trong phần nhà phát triển của [README](../README.vi.md).
-Bản preview trên [Releases](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.2)
-chưa ký số. Xem [kiểm chứng](verification/windows-uninstall-0.1.2.md) trước khi suy ra
+Bản preview trên [Releases](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.3)
+chưa ký số. Xem [kiểm chứng](verification/core-data-0.1.3.md) trước khi suy ra
 khả năng trên Windows sạch. Payload NSIS trong `target/` chỉ dành cho wrapper;
 phân phối file GUI ở `output/windows-setup/`.
 
@@ -78,13 +78,16 @@ nhúng payload/hash/logo vào wizard và tạo `SHA256SUMS.txt` trong output.
 
 Payload raw trong `target/` bỏ bootstrap WebView2 vì wizard xử lý trước; chỉ phân
 phối GUI `.exe`. Registry/runtime/payload được kiểm tra lại khi chạy tiếp/thử lại.
+Hash executable được chụp trong hook compile-time của NSIS, lúc Tauri đang áp
+marker bundle. Không thay bằng hash file standalone sau build. Node chạy ở máy
+build cho hook này; máy người dùng không cần Node.
 QA helper integration chỉ dành cho Sandbox dùng một lần; không chạy trên profile
 cá nhân vì nó thử cài lại và gỡ app. Các output/test captures đều bị ignore.
 
 Sau khi bundle, chạy `npm run uninstall:test` để kiểm tra NSIS trên file giả trong
 `output/uninstall-qa/` và tên registry ngẫu nhiên. Bài test không đụng bản cài hoặc
 AppData NuvoKit thật. Nó kiểm tra giữ/xóa dữ liệu và đăng ký gỡ, không nhấn các hộp
-xác nhận xóa qua UI; xem [phạm vi](verification/windows-uninstall-0.1.2.md).
+xác nhận xóa qua UI; xem [phạm vi](verification/core-data-0.1.3.md).
 
 ## Kiểm chứng native không mở cổng debug
 
@@ -92,9 +95,16 @@ xác nhận xóa qua UI; xem [phạm vi](verification/windows-uninstall-0.1.2.md
 & .\apps\desktop\src-tauri\target\release\nuvokit.exe --smoke-test
 & .\apps\desktop\src-tauri\target\release\nuvokit.exe --smoke-install
 & .\apps\desktop\src-tauri\target\release\nuvokit.exe --verify-core
+& .\apps\desktop\src-tauri\target\release\nuvokit.exe --verify-data
+& .\apps\desktop\src-tauri\target\release\nuvokit.exe --temporary-profile
 ```
 
 - `--smoke-test`: đọc hệ thống, trả kết quả đã lược bỏ thông tin máy cá nhân.
+- `--verify-data`: tạo fixture riêng trong Temp, kiểm chứng backup/preview/restore,
+  schema v1 migration, token, file hỏng và dọn cache; trả JSON đã lược bỏ thông tin máy.
+- `--temporary-profile`: mở UI với SQLite và WebView profile riêng trong Temp,
+  không tự tải gói; phục vụ QA native. Dữ liệu tạm được dọn khi thoát bình thường.
+  Không dùng chế độ này làm nơi lưu dữ liệu cá nhân lâu dài.
 - `--smoke-install`: thêm tải/hash/cài/cài lại gói ngôn ngữ trong thư mục tạm riêng.
 - `--verify-core`: mở WebView thật, xác nhận renderer đã vẽ hai frame, gọi normal
   IPC để lưu/đọc theme, nhận channel cài gói và quét lại. Đo baseline sau 30 giây
@@ -105,6 +115,14 @@ xác nhận xóa qua UI; xem [phạm vi](verification/windows-uninstall-0.1.2.md
 Các chế độ có tải gói cần Internet. Không dump inventory, tài khoản, tên máy hoặc
 serial. Chế độ bình thường không tự tải gói hoặc gửi metrics ra mạng. Không có
 remote debugging endpoint trong quy trình kiểm chứng này.
+
+## Windows Sandbox QA
+
+Kiểm chứng Windows sạch: sau bundle, chạy `npm run windows:qa` hoặc
+`npm run windows:qa:offline`. Cần Sandbox/`wsb` CLI trên QA host Windows 11 24H2+.
+Runner tải bản 0.1.2 đã pin hash, chỉ giải nén payload ở host rồi cài/nâng cấp trong
+guest. Không dừng/reuse VM của người khác; báo cáo gắn run ID và artifact hashes,
+guest không trả kết quả thì không đánh dấu đạt. Xem [QA fixtures](../qa/README.md).
 
 ## Ranh giới source
 

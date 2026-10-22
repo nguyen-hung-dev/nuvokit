@@ -23,6 +23,13 @@
 - Uninstall/data policy is recorded in `docs/decisions/0007-windows-uninstall-data.md`.
   Preserve data by default and during quiet/passive/update modes. Run uninstall QA
   with isolated fixtures; never remove the user's installed app or real AppData.
+- Data contracts: `docs/specs/core-data.md` and decision `0008`. Backup files are
+  private runtime output (`*.nuvobak`), never source. Preserve recovery snapshots,
+  transactional restores and the single-job guard. Use `--temporary-profile` for
+  native UI QA; never migrate the owner's normal profile to obtain test evidence.
+- Installer hashes must come from the NSIS compile-time capture. Tauri restores
+  the standalone binary's bundle marker after packaging; hashing that file alone
+  does not verify the executable actually shipped in the NSIS payload.
 
 ## CodeGraph
 

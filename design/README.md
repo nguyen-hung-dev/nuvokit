@@ -18,12 +18,15 @@ design/
   prompts.md          Mẫu prompt và lịch sử prompt tạo ảnh
   windows-setup.md     Brief/review bước cài môi trường cho người dùng
   windows-setup-prompts.md  Prompt và metadata ba hướng bộ cài
+  core-data.md        Bố cục/trạng thái Cài đặt dữ liệu 0.1.3
   mockups/
     README.md         Danh mục ảnh, trạng thái và ghi chú review
     ...               Ảnh PNG/WebP được tạo về sau
 ```
 
 ## Quy trình
+
+Màn hình Cài đặt mới: [Dữ liệu & sao lưu](core-data.md), tiếp tục theme/UI kit hiện có.
 
 Review hiện tại: [Cài môi trường cho người dùng Windows](windows-setup.md),
 [ba ảnh bộ cài](mockups/README.md#bộ-cài-môi-trường--review) và

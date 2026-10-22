@@ -1,7 +1,14 @@
 ; Keep Tauri's Windows registration and native uninstaller. Never remove the
 ; shared WebView2 runtime. Data deletion remains an explicit interactive choice.
+!define NUVOKIT_HOOK_DIR "${__FILEDIR__}"
 LangString nuvoConfirmDelete 1066 "Xóa vĩnh viễn dữ liệu NuvoKit của tài khoản Windows hiện tại? Đây là cài đặt, lịch sử, gói tải thêm và bộ nhớ đệm trong AppData. Không thể hoàn tác.$\r$\n$\r$\nFile đã xuất ra thư mục riêng và Microsoft WebView2 được giữ lại.$\r$\n$\r$\nOK: gỡ app và xóa dữ liệu. Hủy: dừng gỡ, chưa thay đổi gì."
 LangString nuvoConfirmDelete 1033 "Permanently delete this Windows user's NuvoKit settings, history, downloaded packages and cache in AppData? This cannot be undone.$\r$\n$\r$\nExported files outside AppData and the shared Microsoft WebView2 runtime are kept.$\r$\n$\r$\nOK: uninstall and delete data. Cancel: stop before making changes."
+
+!macro NSIS_HOOK_PREINSTALL
+  ; Compile time only: hash the exact executable consumed by NSIS, including
+  ; Tauri's temporary bundle-type marker. This does not run on the user's PC.
+  !system 'node "${NUVOKIT_HOOK_DIR}\..\..\..\..\scripts\capture-nsis-application.mjs" "${MAINBINARYSRCPATH}" "${PRODUCTNAME}" "${VERSION}"' = 0
+!macroend
 
 !macro NSIS_HOOK_POSTINSTALL
   ; Settings and Control Panel use UninstallString (the interactive wizard).

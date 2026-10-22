@@ -15,5 +15,5 @@
     "allowImportingTsExtensions": true,
     "types": ["vite/client", "@webgpu/types"]
   },
-  "include": ["apps/desktop/src", "apps/desktop/vite.config.ts", "packages"]
+  "include": ["apps/desktop/src", "apps/desktop/vite.config.ts", "packages", "qa"]
 }

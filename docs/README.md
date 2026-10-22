@@ -3,7 +3,7 @@
 Cập nhật: **23/10/2026**. Tài liệu sản phẩm trong repo là nguồn làm việc cho phát
 triển. Tên và ưu tiên **Windows trước, lõi môi trường/phần cứng trước mini-app** đã
 chốt. Đã triển khai Core v1 nội bộ bằng React/TypeScript + Tauri/Rust + SQLite;
-đã có preview 0.1.2 với wizard native mẫu 1 và trình gỡ có lựa chọn dữ liệu. Giấy phép/MVP mini-app và lịch phát
+đã có preview 0.1.3 với wizard mẫu 1, trình gỡ, backup/restore và migration dữ liệu. Giấy phép/MVP mini-app và lịch phát
 hành ổn định vẫn còn mở.
 
 | Tài liệu | Nội dung |
@@ -20,6 +20,8 @@ hành ổn định vẫn còn mở.
 | [Thiết kế cài Windows](specs/windows-installation.md) | Bootstrap native, tiến trình, lỗi và ranh giới chờ duyệt |
 | [Release 0.1.1](releases/0.1.1.md) | Bộ cài Windows preview, cách tải và giới hạn kiểm chứng |
 | [Release 0.1.2](releases/0.1.2.md) | Gỡ qua Windows, lựa chọn giữ/xóa dữ liệu và sửa cấu hình TypeScript |
+| [Release 0.1.3](releases/0.1.3.md) | Dữ liệu lõi, kiểm chứng Windows và sửa hash bộ cài |
+| [Dữ liệu lõi](specs/core-data.md) | Backup/restore, schema migration và ranh giới dọn file |
 | [Verification](verification/README.md) | Bằng chứng kiểm chứng và giới hạn thực tế |
 | [Research](research.md) | Repo liên quan và giới hạn bằng chứng |
 | [Decisions](decisions/README.md) | Quyết định đã chốt và phần còn mở |

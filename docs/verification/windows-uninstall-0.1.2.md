@@ -2,6 +2,11 @@
 
 Ngày: **23/10/2026**. Windows 11 x64, bản preview chưa ký số.
 
+Ghi chú sau phát hành: kiểm chứng Windows sạch ở 0.1.3 phát hiện hash executable
+standalone sau bundle không khớp marker NSIS, có thể khiến wizard 0.1.1/0.1.2 báo
+sai hash sau khi cài. 0.1.3 sửa cách lấy hash và đã thử nâng cấp/gỡ thực trong
+Sandbox. Kết quả fixture 0.1.2 dưới đây vẫn giữ phạm vi lịch sử; xem [hồ sơ mới](core-data-0.1.3.md).
+
 ## Đã kiểm tra
 
 - `npm run setup:test`: **48** assertions, gồm khớp đường dẫn/version đăng ký

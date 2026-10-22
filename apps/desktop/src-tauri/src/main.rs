@@ -2,7 +2,12 @@
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if args
+    if args.iter().any(|arg| arg == "--verify-data") {
+        if let Err(error) = nuvokit_core::verify_data() {
+            eprintln!("{error}");
+            std::process::exit(1);
+        }
+    } else if args
         .iter()
         .any(|arg| arg == "--smoke-test" || arg == "--smoke-install")
     {

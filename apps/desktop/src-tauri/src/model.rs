@@ -73,12 +73,12 @@ pub struct JobProgress {
     pub message: String,
 }
 #[derive(Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Preferences {
     pub theme: String,
 }
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct HistoryEntry {
     pub id: String,
     pub kind: String,

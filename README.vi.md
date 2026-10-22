@@ -9,10 +9,12 @@ liên kết dữ liệu và tùy chọn kết nối AI.
 
 ## Trạng thái
 
-Ngày **23/10/2026**: Đã có **bản preview 0.1.2 cho Windows 11 x64**:
+Ngày **23/10/2026**: Đã có **bản preview 0.1.3 cho Windows 11 x64**:
 kiểm tra môi trường, đọc CPU/RAM/đĩa/GPU, theme sáng/tối, SQLite lưu cài đặt/lịch sử
 và cài gói dữ liệu OCR tùy chọn có kiểm tra SHA-256. Chưa có engine OCR, SDK/kho
 mini-app. Đã có bộ cài theo mẫu 1 được duyệt; bản trình duyệt vẫn dùng dữ liệu mẫu.
+Trong Cài đặt có backup/restore, dung lượng và dọn file tạm. SQLite tự giữ bản
+phục hồi trước khi khôi phục hoặc nâng cấp cấu trúc dữ liệu.
 
 Đã chốt **Windows trước, làm lõi trước mini-app**: kiểm tra môi trường, quản lý cài
 thành phần phụ thuộc và phát hiện phần cứng. Microsoft Store, macOS và web là đích
@@ -29,7 +31,7 @@ nguồn mở; hiện chưa chọn và cấp giấy phép nguồn mở.
 Bản thử nghiệm dành cho **Windows 11 x64**. Máy chạy app đã cài không cần Git,
 Node.js/npm, Rust hay Visual Studio; người dùng không phải chạy lệnh terminal.
 
-**Tải bộ cài:** [NuvoKit 0.1.2 x64 Setup](https://github.com/nguyen-hung-dev/nuvokit/releases/download/v0.1.2/NuvoKit_0.1.2_x64-setup.exe) · [Ghi chú phát hành](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.2). Đây là bản preview chưa ký số. File ZIP source code không phải bộ cài.
+**Tải bộ cài:** [NuvoKit 0.1.3 x64 Setup](https://github.com/nguyen-hung-dev/nuvokit/releases/download/v0.1.3/NuvoKit_0.1.3_x64-setup.exe) · [Ghi chú phát hành](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.3). Đây là bản preview chưa ký số. File ZIP source code không phải bộ cài.
 
 1. Nhận `NuvoKit_<version>_x64-setup.exe` từ trang phát hành của dự án hoặc chủ dự án.
 2. Nhấp đúp file, chọn thư mục và làm theo wizard cài đặt.
@@ -40,7 +42,11 @@ Node.js/npm, Rust hay Visual Studio; người dùng không phải chạy lệnh 
 Wizard native kiểm tra Windows, thư mục và dung lượng; chuẩn bị WebView2 nếu thiếu;
 sau đó cài và xác minh NuvoKit. Mỗi bước có tên/trạng thái; tải có tiến độ thật khi
 biết tổng dung lượng, installer ngoài dùng thanh chờ. Xem [hướng dẫn người dùng](docs/installation.md)
-và [phạm vi kiểm chứng](docs/verification/windows-uninstall-0.1.2.md).
+và [phạm vi kiểm chứng](docs/verification/core-data-0.1.3.md).
+
+Vào **Cài đặt → Dữ liệu & sao lưu** để lưu file `.nuvobak` hoặc xem trước bản khôi
+phục. File chứa cài đặt và toàn bộ lịch sử, không mã hóa và không kèm gói/cache.
+Khôi phục/nâng cấp dữ liệu đều tạo bản phục hồi trước khi thay đổi.
 
 Để gỡ, chọn **Settings → Apps → Installed apps → NuvoKit → Uninstall**, hoặc
 **Control Panel → Programs and Features**. Trình gỡ mặc định giữ dữ liệu. Chọn
@@ -71,10 +77,10 @@ npm run desktop:bundle
 Đợi build thành công rồi mới mở bộ cài:
 
 ```powershell
-Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.2_x64-setup.exe" -Wait
+Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.3_x64-setup.exe" -Wait
 ```
 
-Tên file trên tương ứng version hiện tại `0.1.2`. Source và build nằm trong thư
+Tên file trên tương ứng version hiện tại `0.1.3`. Source và build nằm trong thư
 mục clone đã chọn; cache công cụ và dữ liệu app có thể nằm trong hồ sơ Windows.
 Các bản clone dùng chung dữ liệu app khi cùng định danh. Chỉ xem UI mẫu trong
 trình duyệt: `npm run dev`, mở `http://127.0.0.1:1420/`. Các lệnh khác nằm trong

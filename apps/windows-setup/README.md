@@ -19,7 +19,7 @@ From repository root: `npm run setup:test` and `npm run desktop:bundle`.
 After bundling, `npm run uninstall:test` exercises generated NSIS cleanup using
 isolated synthetic files and a unique test registration; it never modifies the
 real NuvoKit installation or AppData. It does not click destructive GUI dialogs.
-The installer is `output/windows-setup/NuvoKit_0.1.2_x64-setup.exe`.
+The installer is `output/windows-setup/NuvoKit_0.1.3_x64-setup.exe`.
 Do not distribute the raw NSIS payload from `target/` on its own.
 
 The production executable accepts only normal GUI startup or read-only
