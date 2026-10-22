@@ -3,6 +3,9 @@
 Phạm vi đang phát triển: Windows 11 x64, app desktop và browser preview.
 Xem [đặc tả](specs/core-v1.md), [kiến trúc](architecture.md) và [kiểm chứng](verification/README.md).
 
+Tài liệu này dành cho nhà phát triển chạy/build source. Người dùng nhận bộ cài
+đã build xem [hướng dẫn `.exe`](installation.md); không cần toolchain.
+
 ## Công cụ phát triển
 
 - Node.js 22.12+ và npm; dùng lockfile trong repo.
@@ -38,11 +41,12 @@ npm test
 npm run build
 npm run native:test
 npm run native:check
+npm run setup:test
 npm run desktop:build
 ```
 
 Release executable ở `apps/desktop/src-tauri/target/release/nuvokit.exe`.
-`npm run desktop:bundle` tạo bộ cài NSIS local; bộ cài chưa ký và chưa phát hành.
+`npm run desktop:bundle` tạo wizard native `.exe` bọc payload NSIS; bản preview chưa ký số.
 Tất cả target/dist/bundle, database, model tải về và output QA đều bị ignore.
 
 ## Cài bản đã build vào Windows
@@ -51,15 +55,31 @@ Tại thư mục gốc repo, sau khi `npm ci` hoàn tất:
 
 ```powershell
 npm run desktop:bundle
-Start-Process -FilePath ".\apps\desktop\src-tauri\target\release\bundle\nsis\NuvoKit_0.1.0_x64-setup.exe" -Wait
+Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.1_x64-setup.exe" -Wait
 ```
 
 Chỉ chạy lệnh mở bộ cài nếu build thành công. Bộ cài NSIS dùng chế độ current-user;
 làm theo wizard để cài rồi mở NuvoKit từ Start menu. Nếu thiếu WebView2, installer
 tải bootstrapper qua Internet. Node/Rust/Build Tools chỉ cần cho máy build.
-Tên file trên tương ứng version `0.1.0` trong cấu hình Tauri; version sau sẽ có tên
-khác. Hướng dẫn clone từ GitHub nằm trong [README](../README.vi.md#cài-vào-máy-windows).
-Chưa có binary release, chữ ký số hoặc kiểm chứng bộ cài trên Windows sạch.
+Tên file trên tương ứng version `0.1.1` trong cấu hình Tauri; version sau sẽ có tên
+khác. Hướng dẫn clone từ GitHub nằm trong phần nhà phát triển của [README](../README.vi.md).
+Bản preview trên [Releases](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.1)
+chưa ký số. Xem [kiểm chứng](verification/windows-setup-0.1.1.md) trước khi suy ra
+khả năng trên Windows sạch. Payload NSIS trong `target/` chỉ dành cho wrapper;
+phân phối file GUI ở `output/windows-setup/`.
+
+## Wizard native và đóng gói
+
+`apps/windows-setup/` chứa C# WinForms; compiler .NET Framework của Windows tạo
+bootstrapper mà không cần `dotnet` CLI. .NET Framework 4.8 trở lên có sẵn ở Windows
+11. `npm run setup:test` chỉ chạy fixtures/backend giả lập, không cài/gỡ trên profile
+thật. `npm run desktop:bundle` thu notices, build payload với `tauri.payload.conf.json`,
+nhúng payload/hash/logo vào wizard và tạo `SHA256SUMS.txt` trong output.
+
+Payload raw trong `target/` bỏ bootstrap WebView2 vì wizard xử lý trước; chỉ phân
+phối GUI `.exe`. Registry/runtime/payload được kiểm tra lại khi chạy tiếp/thử lại.
+QA helper integration chỉ dành cho Sandbox dùng một lần; không chạy trên profile
+cá nhân vì nó thử cài lại và gỡ app. Các output/test captures đều bị ignore.
 
 ## Kiểm chứng native không mở cổng debug
 

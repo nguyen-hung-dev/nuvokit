@@ -1,0 +1,8 @@
+{
+  "bundle": {
+    "resources": { "../../../output/windows-setup/THIRD_PARTY_LICENSES.txt": "THIRD_PARTY_LICENSES.txt" },
+    "windows": {
+      "webviewInstallMode": { "type": "skip" }
+    }
+  }
+}

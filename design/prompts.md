@@ -4,6 +4,10 @@ Trạng thái: đã tạo D02 light/dark bằng built-in `image_gen`. Đọc [br
 Thay các phần trong ngoặc vuông bằng yêu cầu cụ thể; lưu prompt thực tế để tái tạo
 hoặc chỉnh sửa về sau.
 
+Prompt vòng bộ cài môi trường được lưu riêng tại
+[windows-setup-prompts.md](windows-setup-prompts.md), gồm ràng buộc chung,
+đoạn riêng từng hướng và metadata kết quả. Mẫu wizard đã được duyệt ở lượt tiếp theo; các phương án khác vẫn `review`.
+
 ## Mẫu prompt
 
 ```text

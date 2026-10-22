@@ -1,6 +1,6 @@
 # Lộ trình đề xuất
 
-Cập nhật: **22/10/2026**. Đã chốt **Windows trước, làm lõi trước mini-app**
+Cập nhật: **23/10/2026**. Đã chốt **Windows trước, làm lõi trước mini-app**
 ([quyết định 0002](decisions/0002-windows-first-core.md)). Đã có Core v1 nội bộ và
 [stack đã chọn](decisions/0003-core-v1-stack.md). MVP mini-app/ngày phát hành còn mở.
 Giai đoạn 0 chưa hoàn tất QA trên Windows sạch và các điều kiện phát hành.
@@ -30,6 +30,27 @@ chung cho mọi mini-app và không tính thêm vào danh mục 50 module. Chi t
 dưới đây gồm phần đã triển khai và phần còn phải kiểm chứng. Core v1 và giới hạn
 thực tế được ghi tại [đặc tả](specs/core-v1.md), [cách chạy](development.md) và
 [hồ sơ kiểm chứng](verification/core-v1-windows.md).
+
+### Cài cho người dùng thông thường — preview 0.1.1
+
+- [x] Tách README thành hướng dẫn nhận/cài `.exe` và hướng dẫn developer chạy/build.
+- [x] Viết [đặc tả hai lớp cài đặt](specs/windows-installation.md) và
+  [brief để duyệt](../design/windows-setup.md): bootstrap native trước WebView2,
+  hướng dẫn trong app sau khi UI mở được.
+- [x] Tạo ba [ảnh bộ cài chờ review](../design/mockups/README.md#bộ-cài-môi-trường--review),
+  lưu prompt và metadata; chưa có bố cục được duyệt.
+- [x] Chủ dự án chọn mẫu wizard 1, duyệt code và phát hành; xem [0006](decisions/0006-native-setup-release.md).
+- [x] Đã có wizard native bọc NSIS: hiển thị bước, tên thành phần,
+  tiến trình thật hoặc thanh chờ, lỗi/thử lại/hủy phù hợp và kết quả xác minh.
+- [x] Mở app vào Môi trường hiện có; gói tùy chọn không tự cài.
+- [ ] Onboarding React riêng và CI phát hành tự động nếu cần về sau.
+- [x] Đóng gói/phát hành prerelease 0.1.1 với checksum và upstream notices.
+- [ ] Kiểm thử máy Windows sạch không Git/Node/Rust/Build Tools, runtime có/thiếu,
+  mạng bị ngắt, quyền, cài lại/nâng cấp/gỡ trước phát hành bộ cài.
+
+Wizard đã triển khai sau duyệt. Xem [bằng chứng 0.1.1](verification/windows-setup-0.1.1.md):
+43 kiểm tra Setup, 6 test nghiệp vụ, 10 test Rust đạt; chưa thay thế QA Windows sạch.
+Đã có `.exe` preview trên GitHub Releases; chữ ký số và pipeline tự động chưa có.
 
 ### Khung app và ranh giới nền tảng
 

@@ -1,6 +1,6 @@
 # Contributing to NuvoKit
 
-NuvoKit has an internal Windows core prototype. Start with the [product brief](docs/product.md),
+NuvoKit has an experimental Windows core and a native setup preview. Start with the [product brief](docs/product.md),
 [roadmap](docs/roadmap.md), and [decision log](docs/decisions/README.md).
 
 ## Useful contributions now

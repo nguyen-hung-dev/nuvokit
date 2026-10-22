@@ -571,7 +571,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
               <span>Lưu trên thiết bị</span>
             </div>
           </div>
-          <span className="sidebar-version">NuvoKit · Core v0.1.0</span>
+          <span className="sidebar-version">NuvoKit · Core v0.1.1</span>
         </div>
       </aside>
       <main id="main-content" className="main-content">
@@ -855,7 +855,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
                     </h2>
                   </div>
                   <p className="muted">
-                    NuvoKit Core v0.1.0 · bản thử nghiệm nội bộ cho Windows 11
+                    NuvoKit Core v0.1.1 · bản preview cho Windows 11
                     x64.
                   </p>
                   <div className="note">

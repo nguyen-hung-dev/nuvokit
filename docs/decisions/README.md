@@ -9,6 +9,8 @@ quyết định đã chốt. Gợi ý trong tài liệu không tự trở thành
 | [0002](0002-windows-first-core.md) | Windows trước; lõi môi trường, phụ thuộc và phần cứng trước mini-app | Accepted — 22/10/2026 |
 | [0003](0003-core-v1-stack.md) | Modular monolith, React/TypeScript, Tauri/Rust và SQLite cho Core v1 | Accepted cho lõi nội bộ — 22/10/2026 |
 | [0004](0004-public-source-repository.md) | Repository GitHub công khai, chỉ đưa nội dung dự án đã rà soát | Accepted — 22/10/2026 |
+| [0005](0005-installation-design-review.md) | Tách cài `.exe`/developer; chỉ tài liệu và design, duyệt trước code | Accepted về phạm vi — 22/10/2026 |
+| [0006](0006-native-setup-release.md) | Duyệt mẫu 1, bootstrapper native + NSIS và phát hành preview `.exe` | Accepted — 23/10/2026 |
 
 ## Quyết định còn mở
 

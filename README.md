@@ -9,11 +9,11 @@ connected data, and optional AI.
 
 ## Status
 
-**Internal Windows Core v1 — October 22, 2026.** A React/TypeScript + Tauri/Rust
+**Windows preview 0.1.1 — October 23, 2026.** A React/TypeScript + Tauri/Rust
 application now provides environment checks, hardware inventory, light/dark themes,
 SQLite preferences/history, and a managed optional language-data download.
 Browser mode is a clearly labelled design preview with synthetic hardware data.
-There is no released product, published SDK, or plugin marketplace yet.
+The Windows installer follows the approved wizard design. SDK and mini-app marketplace work remains planned.
 
 The project name and Windows-first priority are confirmed. Work starts with the
 core environment checker, dependency manager, and hardware detection before
@@ -22,35 +22,56 @@ development guides. License, first mini-app release scope, and delivery dates
 remain open decisions. The intended direction is open source;
 an open-source license has not been selected or granted yet.
 
-## Install on Windows
+## Installation
 
-The current preview targets **Windows 11 x64**. There is no downloadable release
-yet; build the installer from source using PowerShell. Install Git, Node.js 22.12+
-with npm, Rust 1.95+ with the MSVC x64 toolchain, Visual Studio Build Tools with
-Desktop development with C++ and a Windows SDK, and Microsoft WebView2 Runtime
-first. See [development prerequisites](docs/development.md#công-cụ-phát-triển).
+### Users: install with an .exe
+
+The preview targets **Windows 11 x64**. An installed build does not need Git,
+Node.js/npm, Rust, or Visual Studio. No terminal commands are required.
+
+**Download:** [NuvoKit 0.1.1 x64 Setup](https://github.com/nguyen-hung-dev/nuvokit/releases/download/v0.1.1/NuvoKit_0.1.1_x64-setup.exe) · [Release notes](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.1). This is an unsigned preview. The source-code ZIP is not an installer.
+
+1. Obtain `NuvoKit_<version>_x64-setup.exe` from the project's release or owner.
+2. Double-click it, choose the installation folder, and follow the setup wizard.
+3. Allow setup to prepare Microsoft WebView2 if it is missing; this currently
+   needs Internet access. The default install is for the current Windows user.
+4. Open NuvoKit from the Start menu. Optional data packages can be added in the app.
+
+The native wizard checks Windows, the installation folder and free space; prepares
+WebView2 if needed; then installs and verifies NuvoKit. It shows named steps, real
+download progress when available, and a waiting indicator during external installers.
+Read the [user guide](docs/installation.md) and [verification limits](docs/verification/windows-setup-0.1.1.md).
+
+### Developers: run and build from source
+
+Install Git, Node.js 22.12+ with npm, Rust 1.95+ with the MSVC x64 toolchain, Visual
+Studio Build Tools with Desktop development with C++ and a Windows SDK, and
+Microsoft WebView2 Runtime. See [development prerequisites](docs/development.md#công-cụ-phát-triển).
 
 ```powershell
 git clone https://github.com/nguyen-hung-dev/nuvokit.git
 cd nuvokit
 npm ci
+npm run desktop
+```
+
+To build a local Windows installer, run:
+
+```powershell
 npm run desktop:bundle
 ```
 
-After the build succeeds, launch the generated installer and follow its prompts:
+Wait for the build to succeed before opening the installer:
 
 ```powershell
-Start-Process -FilePath ".\apps\desktop\src-tauri\target\release\bundle\nsis\NuvoKit_0.1.0_x64-setup.exe" -Wait
+Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.1_x64-setup.exe" -Wait
 ```
 
-The local installer is unsigned and installs for the current Windows user.
-The installed app does not need Node.js, Rust, or Visual Studio. If WebView2 is
-missing, the installer needs Internet access to download its bootstrapper.
-This is an experimental core; clean-machine installation and the RAM target
-remain unverified or unmet. See [verification](docs/verification/core-v1-windows.md).
-
-For development, use `npm run desktop` after `npm ci`. To view the shared UI with
-synthetic data in a browser, use `npm run dev` and open `http://127.0.0.1:1420/`.
+The filename reflects the current version, `0.1.1`. Clone and build output stay in
+the chosen repository folder; development caches and app data may use the user
+profile. Source checkouts share app data when they use the same app identifier.
+For a browser preview with synthetic data, run `npm run dev` and open
+`http://127.0.0.1:1420/`. More commands are in [development](docs/development.md).
 
 ## Product direction
 

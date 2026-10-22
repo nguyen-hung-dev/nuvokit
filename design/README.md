@@ -3,8 +3,9 @@
 Nơi lưu brief, prompt và ảnh mockup để AI/người thiết kế phát triển giao diện.
 Ưu tiên hiện tại: **app Windows, phần lõi trước mini-app**.
 
-Trạng thái: đã có hai mockup D02 light/dark, đang `review`; **chưa có thiết kế được
-chủ dự án duyệt**. Khung UI thử nghiệm lấy các ảnh này làm tham chiếu làm việc.
+Trạng thái: có hai mockup D02 light/dark và ba hướng bố cục bộ cài môi trường,
+**mẫu wizard 1 đã được duyệt và triển khai**; các ảnh còn lại giữ `review`.
+Khung app dùng D02 làm tham chiếu; bộ cài dùng wizard native trước WebView2.
 Tài liệu sản phẩm trong [docs](../docs/README.md) vẫn là nguồn yêu cầu; mockup là
 đề xuất hình ảnh, không chứng minh tính năng đã được triển khai.
 
@@ -15,12 +16,20 @@ design/
   README.md           Hướng dẫn làm việc và cấu trúc
   brief.md            Brief giao diện lõi Windows
   prompts.md          Mẫu prompt và lịch sử prompt tạo ảnh
+  windows-setup.md     Brief/review bước cài môi trường cho người dùng
+  windows-setup-prompts.md  Prompt và metadata ba hướng bộ cài
   mockups/
     README.md         Danh mục ảnh, trạng thái và ghi chú review
     ...               Ảnh PNG/WebP được tạo về sau
 ```
 
 ## Quy trình
+
+Review hiện tại: [Cài môi trường cho người dùng Windows](windows-setup.md),
+[ba ảnh bộ cài](mockups/README.md#bộ-cài-môi-trường--review) và
+[đặc tả](../docs/specs/windows-installation.md). Chủ dự án yêu cầu duyệt trước khi
+code ở lượt thiết kế trước. Lượt tiếp theo đã duyệt mẫu 1 và cho triển khai/phát
+hành, theo [quyết định 0006](../docs/decisions/0006-native-setup-release.md).
 
 1. Đọc [brief](brief.md), [roadmap](../docs/roadmap.md) và các quyết định liên quan.
 2. Viết prompt cụ thể trong [prompts.md](prompts.md), ghi ID, màn hình, theme,

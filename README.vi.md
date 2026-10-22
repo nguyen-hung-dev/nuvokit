@@ -9,47 +9,69 @@ liên kết dữ liệu và tùy chọn kết nối AI.
 
 ## Trạng thái
 
-Ngày **22/10/2026**: Đã có **Core v1 thử nghiệm nội bộ cho Windows 11 x64**:
+Ngày **23/10/2026**: Đã có **bản preview 0.1.1 cho Windows 11 x64**:
 kiểm tra môi trường, đọc CPU/RAM/đĩa/GPU, theme sáng/tối, SQLite lưu cài đặt/lịch sử
 và cài gói dữ liệu OCR tùy chọn có kiểm tra SHA-256. Chưa có engine OCR, SDK/kho
-mini-app hoặc bản phát hành công khai. Bản trình duyệt là preview dùng dữ liệu mẫu.
+mini-app. Đã có bộ cài theo mẫu 1 được duyệt; bản trình duyệt vẫn dùng dữ liệu mẫu.
 
 Đã chốt **Windows trước, làm lõi trước mini-app**: kiểm tra môi trường, quản lý cài
 thành phần phụ thuộc và phát hiện phần cứng. Microsoft Store, macOS và web là đích
 mở rộng sau. Xem [roadmap](docs/roadmap.md) và [quyết định 0002](docs/decisions/0002-windows-first-core.md).
 
 Lõi dùng React/TypeScript + Tauri/Rust + SQLite, chia sẻ UI/nghiệp vụ qua adapter.
-Giấy phép, phạm vi MVP mini-app và ngày phát hành chưa chốt. Dự án hướng đến mã
+Giấy phép, phạm vi MVP mini-app và ngày phát hành ổn định chưa chốt. Dự án hướng đến mã
 nguồn mở; hiện chưa chọn và cấp giấy phép nguồn mở.
 
-## Cài vào máy Windows
+## Cài đặt
 
-Bản thử nghiệm hiện dành cho **Windows 11 x64**. Chưa có bản phát hành để tải bộ
-cài trực tiếp; hãy build từ source bằng PowerShell. Máy build cần có Git, Node.js
-22.12+ kèm npm, Rust 1.95+ dùng toolchain MSVC x64, Visual Studio Build Tools với
-workload **Desktop development with C++** và Windows SDK, cùng Microsoft WebView2
-Runtime. Xem [công cụ phát triển](docs/development.md#công-cụ-phát-triển).
+### Người dùng thông thường: cài qua .exe
+
+Bản thử nghiệm dành cho **Windows 11 x64**. Máy chạy app đã cài không cần Git,
+Node.js/npm, Rust hay Visual Studio; người dùng không phải chạy lệnh terminal.
+
+**Tải bộ cài:** [NuvoKit 0.1.1 x64 Setup](https://github.com/nguyen-hung-dev/nuvokit/releases/download/v0.1.1/NuvoKit_0.1.1_x64-setup.exe) · [Ghi chú phát hành](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.1). Đây là bản preview chưa ký số. File ZIP source code không phải bộ cài.
+
+1. Nhận `NuvoKit_<version>_x64-setup.exe` từ trang phát hành của dự án hoặc chủ dự án.
+2. Nhấp đúp file, chọn thư mục và làm theo wizard cài đặt.
+3. Cho phép bộ cài chuẩn bị Microsoft WebView2 nếu máy còn thiếu; bước này hiện
+   cần Internet. Mặc định app được cài cho tài khoản Windows hiện tại.
+4. Mở NuvoKit từ Start menu. Các gói dữ liệu tùy chọn được cài thêm trong app.
+
+Wizard native kiểm tra Windows, thư mục và dung lượng; chuẩn bị WebView2 nếu thiếu;
+sau đó cài và xác minh NuvoKit. Mỗi bước có tên/trạng thái; tải có tiến độ thật khi
+biết tổng dung lượng, installer ngoài dùng thanh chờ. Xem [hướng dẫn người dùng](docs/installation.md)
+và [phạm vi kiểm chứng](docs/verification/windows-setup-0.1.1.md).
+
+### Nhà phát triển: chạy và build từ source
+
+Máy phát triển cần Git, Node.js 22.12+ kèm npm, Rust 1.95+ dùng toolchain MSVC x64,
+Visual Studio Build Tools với workload **Desktop development with C++** và Windows
+SDK, cùng Microsoft WebView2 Runtime. Xem [công cụ phát triển](docs/development.md#công-cụ-phát-triển).
 
 ```powershell
 git clone https://github.com/nguyen-hung-dev/nuvokit.git
 cd nuvokit
 npm ci
+npm run desktop
+```
+
+Để tạo bộ cài Windows local, chạy:
+
+```powershell
 npm run desktop:bundle
 ```
 
-Sau khi build thành công, mở bộ cài và làm theo hướng dẫn trên màn hình:
+Đợi build thành công rồi mới mở bộ cài:
 
 ```powershell
-Start-Process -FilePath ".\apps\desktop\src-tauri\target\release\bundle\nsis\NuvoKit_0.1.0_x64-setup.exe" -Wait
+Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.1_x64-setup.exe" -Wait
 ```
 
-Bộ cài local chưa ký số, cài cho tài khoản Windows hiện tại. Máy chỉ chạy app đã
-cài không cần Node.js, Rust hay Visual Studio. Nếu thiếu WebView2, bộ cài cần
-Internet để tải bootstrapper. Chưa kiểm thử cài trên Windows sạch; mức RAM đo được
-còn vượt mục tiêu. Xem [kết quả kiểm chứng](docs/verification/core-v1-windows.md).
-
-Để phát triển: sau `npm ci`, chạy `npm run desktop`. Chỉ xem giao diện mẫu trong
-trình duyệt: chạy `npm run dev`, mở `http://127.0.0.1:1420/`.
+Tên file trên tương ứng version hiện tại `0.1.1`. Source và build nằm trong thư
+mục clone đã chọn; cache công cụ và dữ liệu app có thể nằm trong hồ sơ Windows.
+Các bản clone dùng chung dữ liệu app khi cùng định danh. Chỉ xem UI mẫu trong
+trình duyệt: `npm run dev`, mở `http://127.0.0.1:1420/`. Các lệnh khác nằm trong
+[hướng dẫn phát triển](docs/development.md).
 
 ## Trải nghiệm mong muốn
 

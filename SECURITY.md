@@ -1,15 +1,14 @@
 # Security
 
-NuvoKit contains an experimental Windows core and planning documents. No
-application, SDK, or service has been released; there are no supported application
-versions yet.
+NuvoKit 0.1.1 is an experimental Windows preview. The current preview receives
+best-effort fixes; there is no stable supported release or public SDK yet.
 
 ## Reporting
 
 Do not put credentials, private user records, or sensitive exploit details in a
-public issue. Before public release, the maintainer must configure and document a
-private reporting channel and a supported-version policy. No private reporting
-channel is configured for this repository yet.
+public issue. Use [private vulnerability reporting](https://github.com/nguyen-hung-dev/nuvokit/security/advisories/new).
+GitHub private vulnerability reporting is enabled for this repository. Include the
+affected version and a synthetic reproduction; omit personal records and secrets.
 
 ## Planned boundaries
 

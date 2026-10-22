@@ -5,3 +5,5 @@ máy cá nhân, đường dẫn người dùng, log có bí mật hoặc runtime
 
 Core v1 được kiểm chứng theo [đặc tả](../specs/core-v1.md). Xem
 [kết quả Windows](core-v1-windows.md), số đo thực tế và phần còn chưa kiểm chứng.
+
+- [Windows Setup 0.1.1](windows-setup-0.1.1.md): wizard native, tests và giới hạn phát hành.

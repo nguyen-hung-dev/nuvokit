@@ -16,6 +16,10 @@
   Personal planning notes outside the repository are not a source-code dependency.
 - Update relevant documentation when implementation changes the product contracts.
 - Prefer concise, specific status reports and concrete next actions.
+- The approved Windows setup target is `design/mockups/windows-setup-wizard-light-v01.png`.
+  Read `docs/decisions/0006-native-setup-release.md` and the installation specification.
+  Keep the native bootstrap UI independent of WebView2. Publish installers as Release
+  assets; keep build output and machine data outside source commits.
 
 ## CodeGraph
 

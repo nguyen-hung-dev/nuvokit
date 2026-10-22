@@ -3,6 +3,10 @@
 Ngày tạo: **22/10/2026**. Trạng thái: **đã có mockup D02 light/dark để review**.
 Hành vi bản lõi đầu tiên theo [đặc tả Core v1](../docs/specs/core-v1.md).
 
+Vòng review bổ sung: [bộ cài môi trường cho người dùng `.exe`](windows-setup.md).
+Ba bố cục giữ phong cách D02; chủ dự án đã duyệt mẫu wizard 1 và cho triển khai
+ở lượt tiếp theo. Hai hướng khác vẫn là phương án tham khảo.
+
 ## Căn cứ
 
 - [Định hướng sản phẩm](../docs/product.md).

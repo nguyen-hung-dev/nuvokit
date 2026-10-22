@@ -42,6 +42,10 @@ WebView2 được bộ cài Windows bootstrap trước UI nếu thiếu. Màn h�
 đọc phiên bản đăng ký và báo chưa xác định nếu không tìm được, không tự tải WebView2
 trong một UI vốn chưa mở được.
 
+Thiết kế mở rộng bootstrap và lần mở đầu nằm trong [đặc tả cài Windows](windows-installation.md).
+Mẫu wizard 1 đã được duyệt và triển khai ở preview 0.1.1. Giao diện bootstrap chạy
+trước app; hành vi lõi bốn trang hiện có được giữ lại.
+
 ## Phép thử đồ họa
 
 Phép thử WebGPU gửi bốn số nguyên qua compute shader và đối chiếu kết quả nhân đôi.

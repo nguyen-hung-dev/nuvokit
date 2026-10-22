@@ -22,6 +22,13 @@ Node 26.4, WebView2 đã có sẵn. Không coi đây là phép thử Windows s�
 - Đã chụp/kiểm tra hình ảnh light/dark và bố cục 1440/1024/390 px; kiểm tra không
   tràn ngang ở 1024/390 px, không có console error sau sửa favicon.
 
+## Xác nhận cài thử của chủ dự án
+
+Ngày 22/10/2026, chủ dự án báo đã clone từ GitHub, cài dependency, build bộ cài,
+cài và mở app thành công, đánh giá ổn định ở giai đoạn đầu. Đây là phản hồi sử
+dụng trên máy đang có công cụ phát triển, không phải một lượt QA độc lập của agent.
+Chưa xác nhận máy thiếu toolchain/WebView2; không có số đo hiệu năng mới từ báo cáo.
+
 ## Số đo ban đầu và vấn đề còn lại
 
 | Lượt / Pha | UI ready | Quét lại | Tổng working set | CPU rảnh | Kết quả |
