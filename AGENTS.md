@@ -4,7 +4,9 @@
 
 - Read `README.md`, `docs/README.md`, and the documents relevant to the task.
 - Use `docs/decisions/` to distinguish accepted decisions from proposals.
-- This is a documentation-first project. There is no application scaffold yet.
+- Product documentation is authoritative. The repository now has an internal
+  Windows Core v1 scaffold; read `docs/specs/core-v1.md`, `docs/development.md`,
+  and actual verification evidence before describing a feature as working.
 - Do not describe planned features as implemented or invent setup/build commands.
 - Do not choose a license, create a remote repository, publish, or deploy unless
   the user authorizes that action. Local reversible work within the task can proceed.

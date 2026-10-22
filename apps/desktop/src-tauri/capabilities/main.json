@@ -1,0 +1,16 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "Only the local main app window may call the versioned core commands.",
+  "windows": ["main"],
+  "permissions": [
+    "allow-scan-environment",
+    "allow-install-dependency",
+    "allow-cancel-install",
+    "allow-get-preferences",
+    "allow-set-preferences",
+    "allow-get-history",
+    "allow-ui-ready",
+    "allow-finish-verification"
+  ]
+}

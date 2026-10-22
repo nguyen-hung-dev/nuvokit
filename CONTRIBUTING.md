@@ -1,6 +1,6 @@
 # Contributing to NuvoKit
 
-NuvoKit is in its planning phase. Start with the [product brief](docs/product.md),
+NuvoKit has an internal Windows core prototype. Start with the [product brief](docs/product.md),
 [roadmap](docs/roadmap.md), and [decision log](docs/decisions/README.md).
 
 ## Useful contributions now
@@ -22,11 +22,15 @@ or license before treating them as settled.
 4. Review the diff and ensure no private data or generated artifacts are included.
 5. Explain the change and actual validation in the pull request or handoff.
 
-Application build and test commands will be documented when an application exists.
+Use the commands in [development](docs/development.md) and check the
+[Core v1 specification](docs/specs/core-v1.md) when changing behavior.
 Full app QA is unnecessary for low-risk documentation edits.
 
 ## Publication and licensing
 
-The remote repository, contribution terms, and project license are not configured
-yet. Establish them before accepting public code contributions. Do not upload
-private examples, credentials, or copyrighted product assets without authorization.
+The public source repository is [nguyen-hung-dev/nuvokit](https://github.com/nguyen-hung-dev/nuvokit).
+Contribution terms and the project license remain undecided; resolve them before
+accepting public code contributions. Keep commits limited to project source,
+documentation, configuration, lockfiles, and intentional design assets. Do not
+upload private notes, credentials, local application data, hardware inventories,
+build output, dependencies, or QA captures. See [publication decision](docs/decisions/0004-public-source-repository.md).

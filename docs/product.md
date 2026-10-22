@@ -13,6 +13,9 @@ khách hàng trả phí hoặc bằng chứng thị trường cho NuvoKit.
 
 ## Định hướng đã có
 
+- Windows là nền tảng triển khai đầu tiên; làm lõi kiểm tra môi trường, cài thành
+  phần phụ thuộc và phát hiện phần cứng trước mini-app. Xem
+  [quyết định 0002](decisions/0002-windows-first-core.md) và [roadmap](roadmap.md).
 - Giao diện đẹp; nhiều theme phát triển trên một bộ thành phần chung.
 - App con có chức năng, dữ liệu, lịch sử và khả năng xuất dữ liệu riêng.
 - Có đồng hồ, đọc sách, công việc, thu chi, OCR và nhiều nhóm tiện ích khác.
@@ -45,8 +48,13 @@ hạn; không phải phạm vi của bản đầu hoặc cam kết một ngườ
 
 ## Chưa chốt
 
-Nhóm người dùng đầu tiên; nền tảng và ngôn ngữ phát hành; stack; giấy phép; ngân
-sách; MVP; ngày ra mắt; tên miền; nhà cung cấp AI; giá và dịch vụ thu phí.
+Nhóm người dùng đầu tiên; phạm vi Windows/ngôn ngữ phát hành công khai;
+giấy phép; ngân sách; MVP mini-app; ngày ra mắt; tên miền; nhà cung cấp AI; giá và
+dịch vụ thu phí. Microsoft Store, macOS và web là đích mở rộng, chưa có lịch hoặc
+cam kết cùng chức năng với Windows.
+
+Lõi nội bộ hiện triển khai cho Windows 11 x64, UI tiếng Việt, theo
+[đặc tả Core v1](specs/core-v1.md) và [stack đã chọn](decisions/0003-core-v1-stack.md).
 
 Mục tiêu kiểm chứng và lộ trình ở [roadmap](roadmap.md). Không hứa số sao GitHub,
 doanh thu hoặc tiến độ trước khi có dữ liệu thực tế.
