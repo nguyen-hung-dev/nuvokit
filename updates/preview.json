@@ -1,0 +1,11 @@
+{
+  "version": "0.1.4",
+  "notes": "# NuvoKit 0.1.4 — Windows preview\n\n- Thêm Tổng quan, thư viện plugin với bộ lọc và chuyển bố cục lưới/chi tiết.\n- Đồng hồ tích hợp: tập trung, đếm ngược, bấm giờ; ba bố cục, theme riêng,\n  lưu phiên/lịch sử trên thiết bị và sao lưu dữ liệu.\n- Cập nhật từ GitHub trong Cài đặt: chọn kênh, kiểm tra, tải có tiến trình,\n  xác minh chữ ký và phiên bản, xác nhận cài khi sẵn sàng.\n- Giữ dữ liệu khi nâng cấp, tạo bản phục hồi trước khi thay app; chặn cài khi\n  còn tác vụ dữ liệu hoặc phiên Đồng hồ đang hoạt động.\n- Dev cập nhật source bằng Git với kiểm tra thay đổi local và fast-forward.\n\nNgười dùng 0.1.3 trở về trước cần cài bộ cài mới một lần để nhận updater.\nBộ cài Windows chưa có chứng chỉ Authenticode; chữ ký gói cập nhật Tauri là\ncơ chế riêng. Windows 11 x64; các plugin ngoài Đồng hồ vẫn là bản mẫu giao diện.\n",
+  "pub_date": "2026-10-23T18:17:00.564Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRaC90NmVML01FNXBLbk9GUzhySlVjc0NRZElaZWNXRGNqY3JYKy9vY0o0Uk1GQjdBMk5GMDlEZmFIVTlhcXpvWTlydjh5ayt5dUtRSXRyRCtmdzhZYkx6QVFRSkdld0E0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzkyNzc5NDIwCWZpbGU6TnV2b0tpdF8wLjEuNF94NjQtc2V0dXAuZXhlCXZlcnNpb246MC4xLjQKK3owZ0xXc0E0WFNrbkhJTFRhSkFtQXpETncveW9YTjY0VHE0NWhURXdEZ1Ardy9ac2pzVGhiZ1h2Rk5YVXhqZ2JRTDZmY1ZIamVvZjhpQzdxMFFqQUE9PQo=",
+      "url": "https://github.com/nguyen-hung-dev/nuvokit/releases/download/v0.1.4/NuvoKit_0.1.4_x64-update.exe"
+    }
+  }
+}
