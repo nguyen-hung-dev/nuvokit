@@ -57,7 +57,9 @@ thực tế được ghi tại [đặc tả](specs/core-v1.md), [cách chạy](d
 
 Wizard đã triển khai sau duyệt. Xem [bằng chứng 0.1.1](verification/windows-setup-0.1.1.md):
 43 kiểm tra Setup, 6 test nghiệp vụ, 10 test Rust đạt; chưa thay thế QA Windows sạch.
-Đã có `.exe` preview trên GitHub Releases; chữ ký số và pipeline tự động chưa có.
+Đã có `.exe` preview trên GitHub Releases và updater có chữ ký Tauri từ 0.1.4.
+Workflow phát hành đã cấu hình nhưng hiện bị billing GitHub chặn; bản 0.1.4 được
+build/ký/phát hành local. Chứng chỉ Authenticode Windows chưa có.
 
 ### Khung app và ranh giới nền tảng
 

@@ -24,8 +24,7 @@ ngoài vẫn chưa phải guest loader. Updater chỉ thay app bằng payload c�
 repo chính; không chạy Git/npm trên máy user và không cập nhật độc lập guest ZIP.
 
 Bằng chứng runtime nằm trong output/update-qa/ và output/windows-sandbox/ (ignored).
-GitHub release/feed và CI sẽ được ghi kết quả sau khi phát hành thực tế; không coi
-cấu hình workflow là bằng chứng workflow đã chạy. Không cập nhật bản app hoặc
+Không coi cấu hình workflow là bằng chứng workflow đã chạy. Không cập nhật bản app hoặc
 AppData thật của chủ máy để lấy kết quả kiểm chứng.
 
 ## Giao diện và dịch vụ phát hành
@@ -38,3 +37,27 @@ AppData thật của chủ máy để lấy kết quả kiểm chứng.
 - Workflow run 40000761829 không khởi chạy job vì GitHub báo tài khoản bị khóa
   do billing. Không coi CI là đạt; dùng cùng script build/ký/phát hành tại máy
   để hoàn tất release. Không thay đổi phương thức thanh toán hoặc giới hạn account.
+
+## Kết quả phát hành và đường cập nhật thật
+
+- Phát hành public prerelease [v0.1.4](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.4)
+  từ source commit `a964892cd8c91bf6ca9f3984ce91886aa77afe06`.
+- Assets: wizard setup, signed NSIS update + .sig, latest.json, SHA256SUMS.txt và
+  THIRD_PARTY_LICENSES.txt. Đã đối chiếu SHA-256 server của đủ 6 assets trước khi
+  công bố và ghi `updates/preview.json`; không đưa binary vào source.
+- Native `node scripts/verify-updater.mjs remote` đọc feed công khai và tải đúng
+  gói từ GitHub mà không cần token user: version 0.1.4, 4.196.865 bytes;
+  signatureAndVersionVerified=true, tamperedPackageRejected=true,
+  relabeledVersionRejected=true, installerExecuted=false,
+  actualUserDataModified=false. Đây là kiểm tra tải/xác minh thật, khác fixture UI.
+- Setup SHA-256: `fc4a5ee841076b79e8e3c7d34d0362ec6b24813f7272a1a654fa5169b39e376d`.
+  Update SHA-256: `5b1eef1d2a584e83195309c7802236cc7ac9d5e2c5f0600eea905e50a2bceb34`.
+- Sandbox cuối `75b1d97b3b4b4c1b811031c7c2d3fde4` kiểm tra đúng các hash này:
+  thiếu runtime/toolchain lúc đầu, nâng cấp/cài lại, renderer, data roundtrip,
+  gỡ và giữ dữ liệu đều đạt; actual host registration không đổi, VM đã dừng.
+- Actions vẫn bị GitHub billing chặn trước bước đầu. Bản này được build/ký và
+  phát hành local bằng cùng scripts; chưa có bằng chứng CI chạy thành công.
+
+Bản 0.1.3 cần cài đè 0.1.4 một lần. Khi đã ở 0.1.4, app kiểm tra các bản cao hơn
+qua kênh GitHub. Chưa chạy thao tác updater thay app trên máy chủ sở hữu; kiểm tra
+installer diễn ra trong Sandbox, download/verify diễn ra với profile Temp.

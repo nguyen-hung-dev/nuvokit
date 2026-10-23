@@ -19,8 +19,7 @@ liên kết dữ liệu và tùy chọn kết nối AI.
 
 Ngày **24/10/2026**: **bản preview 0.1.4 cho Windows 11 x64**:
 kiểm tra môi trường, đọc CPU/RAM/đĩa/GPU, theme sáng/tối, SQLite lưu cài đặt/lịch sử
-và cài gói dữ liệu OCR tùy chọn có kiểm tra SHA-256. Chưa có engine OCR, SDK/kho
-mini-app. Đã có bộ cài theo mẫu 1 được duyệt; bản trình duyệt vẫn dùng dữ liệu mẫu.
+và cài gói dữ liệu OCR tùy chọn có kiểm tra SHA-256. Chưa có engine OCR hoặc kho chạy gói plugin bên ngoài. Đã có bộ cài theo mẫu 1 được duyệt; bản trình duyệt vẫn dùng dữ liệu mẫu.
 Trong Cài đặt có backup/restore, dung lượng và dọn file tạm. SQLite tự giữ bản
 phục hồi trước khi khôi phục hoặc nâng cấp cấu trúc dữ liệu.
 
