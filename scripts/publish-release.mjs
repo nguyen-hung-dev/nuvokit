@@ -16,7 +16,7 @@ let existing;
 try { existing = JSON.parse(gh("release", "view", plan.tag, "--repo", repo, "--json", "isDraft,tagName")); } catch (error) { if (!String(error.stderr).includes("release not found")) throw error; }
 if (existing && !existing.isDraft && !process.argv.includes("--refresh-feed")) throw new Error("This version is already published. Bump the app version; use --refresh-feed only to recover a failed metadata publication.");
 if (existing && !existing.isDraft) {
-  const release=JSON.parse(gh("api",`repos/${repo}/releases/tags/${plan.tag}`));
+  const release=JSON.parse(gh("api",JSON.parse(gh("release","view",plan.tag,"--repo",repo,"--json","apiUrl")).apiUrl));
   const asset=release.assets.find(item=>item.name==="latest.json");
   if(!asset) throw new Error("Published release has no updater manifest.");
   const bytes=run("gh",["api",`repos/${repo}/releases/assets/${asset.id}`,"-H","Accept: application/octet-stream"],{encoding:null});
@@ -26,7 +26,7 @@ if (existing && !existing.isDraft) {
 if (!existing) gh("release", "create", plan.tag, "--repo", repo, "--target", commit, "--draft", "--title", `NuvoKit ${version} — Windows ${channel === "preview" ? "preview" : "stable"}`, "--notes-file", `docs/releases/${version}.md`, ...(plan.prerelease ? ["--prerelease"] : []));
 gh("release", "upload", plan.tag, "--repo", repo, ...plan.assets.map(name => path.join(output, name)), "--clobber");
 // Confirm uploaded assets and server digests before changing the channel pointer.
-const release = JSON.parse(gh("api", `repos/${repo}/releases/tags/${plan.tag}`));
+const release = JSON.parse(gh("api", JSON.parse(gh("release", "view", plan.tag, "--repo", repo, "--json", "apiUrl")).apiUrl));
 if (release.target_commitish !== commit && release.target_commitish !== "main") throw new Error("Draft release points to a different source revision.");
 if (plan.assets.some(name => !release.assets.some(asset => asset.name === name && asset.size > 0))) throw new Error("Release assets are incomplete.");
 for (const name of plan.assets) { const asset = release.assets.find(item => item.name === name); if (asset.digest !== `sha256:${hash(path.join(output,name))}`) throw new Error(`Uploaded asset digest mismatch: ${name}`); }
