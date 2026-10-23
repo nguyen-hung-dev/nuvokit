@@ -158,7 +158,10 @@ fn set_preferences(
     window: tauri::WebviewWindow,
     updates: State<'_, Arc<updates::Updates>>,
 ) -> Result<(), String> {
-    let _writes = updates.write_gate.lock().map_err(|_| "Dữ liệu đang bận.")?;
+    let _writes = updates
+        .write_gate
+        .try_lock()
+        .map_err(|_| "Dữ liệu đang bận.")?;
     engine.store.save_preferences(&preferences)?;
     let theme = if preferences.theme == "dark" {
         tauri::Theme::Dark

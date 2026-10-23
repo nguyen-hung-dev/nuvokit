@@ -472,12 +472,15 @@ pub async fn install_update(
         if !updates.can_install() {return Err("Chỉ cài cập nhật từ bản NuvoKit đã cài bằng bộ cài. Phiên kiểm thử không thay đổi bản cài thật.".into());}
         let _operation=updates.begin()?;let _job=engine.maintenance()?;
         let _writes=updates.write_gate.lock().map_err(|_| "Dữ liệu đang bận.")?;
-        let available=updates.available.lock().map_err(|_| "Cập nhật đang bận.")?;
-        let package=available.as_ref().filter(|p|p.offer.token==token).ok_or("Bản cập nhật đã thay đổi. Kiểm tra lại.")?;
-        let bytes=package.bytes.as_ref().ok_or("Tải và xác minh bản cập nhật trước khi cài.")?;
-        package.update.verify(bytes).map_err(|_| "Chữ ký cập nhật không hợp lệ; chưa thay đổi app.")?;
+        let (update,bytes)={
+            let available=updates.available.lock().map_err(|_| "Cập nhật đang bận.")?;
+            let package=available.as_ref().filter(|p|p.offer.token==token).ok_or("Bản cập nhật đã thay đổi. Kiểm tra lại.")?;
+            let bytes=package.bytes.as_ref().ok_or("Tải và xác minh bản cập nhật trước khi cài.")?;
+            (package.update.clone(),bytes.clone())
+        };
+        update.verify(&bytes).map_err(|_| "Chữ ký cập nhật không hợp lệ; chưa thay đổi app.")?;
         engine.store.snapshot_for_update()?;
-        package.update.install(bytes).map_err(|_| "Không mở được trình cài cập nhật. Dữ liệu và bản đang dùng được giữ.".to_string())
+        update.install(&bytes).map_err(|_| "Không mở được trình cài cập nhật. Dữ liệu và bản đang dùng được giữ.".to_string())
     }).await.map_err(|_| "Chưa cài được cập nhật.".to_string())?
 }
 pub fn verify(app: tauri::AppHandle) {

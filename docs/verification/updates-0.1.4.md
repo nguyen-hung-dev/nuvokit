@@ -27,3 +27,14 @@ Bằng chứng runtime nằm trong output/update-qa/ và output/windows-sandbox/
 GitHub release/feed và CI sẽ được ghi kết quả sau khi phát hành thực tế; không coi
 cấu hình workflow là bằng chứng workflow đã chạy. Không cập nhật bản app hoặc
 AppData thật của chủ máy để lấy kết quả kiểm chứng.
+
+## Giao diện và dịch vụ phát hành
+
+- Browser fixture kiểm tra lỗi mạng, chữ ký sai, hủy/tải lại, guard Clock/job,
+  xác nhận/để sau và hai kênh. Counter cài giả lập tăng 1; không chạy installer.
+  Console warning/error: không có ở lượt kiểm tra cuối. Capture ignored:
+  output/update-qa/ui-fixture.png.
+- Source app/Clock/SDK/design đã commit và push `6799d4b` lên main.
+- Workflow run 40000761829 không khởi chạy job vì GitHub báo tài khoản bị khóa
+  do billing. Không coi CI là đạt; dùng cùng script build/ký/phát hành tại máy
+  để hoàn tất release. Không thay đổi phương thức thanh toán hoặc giới hạn account.
