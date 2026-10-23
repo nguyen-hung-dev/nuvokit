@@ -6,6 +6,10 @@ Nơi lưu brief, prompt và ảnh mockup để AI/người thiết kế phát tr
 Trạng thái: có hai mockup D02 light/dark và ba hướng bố cục bộ cài môi trường,
 **mẫu wizard 1 đã được duyệt và triển khai**; các ảnh còn lại giữ `review`.
 Khung app dùng D02 làm tham chiếu; bộ cài dùng wizard native trước WebView2.
+Ba [ảnh app chính/thư viện plugin](plugin-library.md) ngày 23/10/2026 đã được duyệt.
+Source có UI chuyển lưới/chi tiết; thao tác plugin còn là bản mẫu trong phiên.
+Cả ba [ảnh plugin Đồng hồ](clock-plugin.md) đã được duyệt và triển khai thành
+bộ chọn bố cục trong Cài đặt Đồng hồ; theme sáng/tối độc lập, phiên được lưu trên máy.
 Tài liệu sản phẩm trong [docs](../docs/README.md) vẫn là nguồn yêu cầu; mockup là
 đề xuất hình ảnh, không chứng minh tính năng đã được triển khai.
 
@@ -19,6 +23,10 @@ design/
   windows-setup.md     Brief/review bước cài môi trường cho người dùng
   windows-setup-prompts.md  Prompt và metadata ba hướng bộ cài
   core-data.md        Bố cục/trạng thái Cài đặt dữ liệu 0.1.3
+  plugin-library.md   Brief/review app chính và thư viện plugin
+  plugin-library-prompts.md  Prompt thực tế của ba ảnh plugin
+  clock-plugin.md     Brief/review plugin Đồng hồ
+  clock-plugin-prompts.md  Prompt thực tế của ba ảnh Đồng hồ
   mockups/
     README.md         Danh mục ảnh, trạng thái và ghi chú review
     ...               Ảnh PNG/WebP được tạo về sau

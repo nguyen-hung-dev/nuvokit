@@ -115,6 +115,11 @@ và cách hiển thị khi thiếu hỗ trợ. Dữ liệu và UI có thể dùn
 
 ### Plugin NuvoKit và quyền native
 
+Hợp đồng gói/API tối thiểu v1 đã chốt tại [0009](decisions/0009-plugin-ui-package-sdk.md)
+và [đặc tả](specs/plugin-package-v1.md). Source có UI thư viện bản mẫu, schema,
+validator và SDK client. Guest/loader/host enforcement bên dưới còn phải PoC;
+không coi client wrapper hoặc manifest là sandbox thực thi quyền.
+
 Mini-app cài thêm của NuvoKit là hợp đồng runtime riêng, không đồng nghĩa với
 plugin Rust của Tauri được tích hợp khi build. Plugin bên thứ ba không được nạp
 chung ngữ cảnh có quyền native của app shell hoặc nhận API shell/file/SQL tùy ý.
@@ -155,3 +160,18 @@ Windows; chưa có hồ sơ Store hoặc kiểm chứng macOS/web đầy đủ.
 - AI/OCR cloud phải là tùy chọn có phạm vi dữ liệu và chi phí rõ ràng.
 
 Các mục này là yêu cầu kiểm chứng, chưa phải bảo đảm an toàn hoặc độ tin cậy.
+
+## Đồng hồ trong source chưa phát hành
+
+Module React chính chủ ở `plugins/clock/src/`, domain/DTO ở `packages/core/src/clock.ts`.
+`ClockRepository` chọn SQLite qua command riêng trên desktop hoặc IndexedDB trên
+browser; UI không gọi Tauri trực tiếp. SQLite schema 3 và backup format 2 bổ sung
+state/revision/lịch sử Clock, giữ tương thích backup cũ. Đây là module bundle tin
+cậy; không thay thế guest/bridge/cơ chế quyền SDK đang chờ triển khai.
+
+## Cập nhật app/plugin — 0.1.4
+
+Theo [0011](decisions/0011-github-signed-updates.md), app EXE dùng updater có chữ
+ký từ GitHub Releases; dev chạy source dùng Git fast-forward với kiểm tra local
+edits. Đồng hồ hiện được bundle nên cập nhật cùng app; gói plugin ngoài chưa có
+loader/cập nhật độc lập. [Luồng cập nhật](specs/updates-v1.md).

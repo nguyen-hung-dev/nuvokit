@@ -1,0 +1,126 @@
+.app-shell[data-clock-theme="light"] { color-scheme: light; --bg:#fafbfe; --surface:#fff; --sidebar:#fafbfe; --text:#131a35; --muted:#697791; --line:#e3e7f1; --accent:#6046ed; --accent-soft:#efecff; --subtle:#f1f3f8; --shadow:0 12px 36px #24304b12; color:var(--text); background:var(--bg); }
+.app-shell[data-clock-theme="dark"] { color-scheme:dark; --bg:#10131c; --surface:#1a1f2d; --sidebar:#141822; --text:#edf0f8; --muted:#a5afc2; --line:#2a3040; --accent:#b5a5ff; --accent-soft:#2c2546; --subtle:#202637; --shadow:0 12px 36px #0004; color:var(--text); background:var(--bg); }
+.clock-plugin { max-width:1250px; margin:auto; }
+.clock-plugin .breadcrumb { margin-bottom:26px; }
+.clock-plugin .workspace-heading { align-items:center; margin-bottom:20px; }
+.clock-plugin .workspace-heading h1 { font-size:46px; }
+.clock-settings-button { flex-shrink:0; }
+.clock-tabs { display:flex; gap:22px; border-bottom:1px solid var(--line); margin-bottom:32px; }
+.clock-tabs > button { display:flex; align-items:center; gap:13px; border:0; border-bottom:3px solid transparent; background:none; color:var(--muted); padding:15px 21px; font-size:18px; font-weight:600; }
+.clock-tabs > button[aria-pressed="true"] { color:var(--accent); border-bottom-color:var(--accent); }
+.clock-tabs > button:disabled[aria-pressed="true"] { opacity:1; }
+.clock-body { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(300px,1fr); }
+.clock-stage { text-align:center; padding:6px 28px 15px; min-width:0; }
+.clock-status { display:inline-flex; align-items:center; gap:8px; background:var(--accent-soft); color:var(--accent); border-radius:22px; padding:8px 15px; font-size:15px; font-weight:600; }
+.clock-session-label { margin:20px 0 7px; font-size:19px; }
+.clock-face { width:min(100%,370px); aspect-ratio:1; position:relative; margin:0 auto 20px; display:grid; place-items:center; }
+.clock-ring-track,.clock-ring-progress { position:absolute; width:100%; height:100%; overflow:visible; }
+.clock-ring-track { color:var(--accent-soft); }
+.clock-ring-progress { color:var(--accent); transform:rotate(-90deg); }
+.clock-ring-progress circle { stroke-dasharray:var(--clock-arc); stroke-linecap:round; }
+.clock-digits { display:flex; flex-direction:column; gap:5px; }
+.clock-digits strong { font-size:clamp(50px,5.8vw,85px); line-height:1.15; font-weight:650; letter-spacing:-3px; font-variant-numeric:tabular-nums; }
+.clock-digits > span { color:var(--muted); font-size:19px; }
+.clock-session-panel { border-left:1px solid var(--line); padding:6px 0 16px 30px; min-width:0; }
+.clock-session-panel > h2,.clock-history h2 { font-size:22px; font-weight:700; margin-bottom:21px; }
+.clock-fields { display:grid; gap:24px; margin:22px 0; }
+.clock-fields label,.clock-name { display:grid; gap:9px; font-size:16px; text-align:left; }
+.clock-fields input,.clock-fields textarea,.clock-name input,.clock-time-fields input { background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:9px; padding:13px 16px; width:100%; min-width:0; font:inherit; }
+.clock-fields textarea { resize:vertical; line-height:1.5; min-height:100px; max-height:240px; }
+.clock-fields input:focus-visible,.clock-fields textarea:focus-visible,.clock-name input:focus-visible,.clock-time-fields input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.clock-fields input::placeholder,.clock-fields textarea::placeholder,.clock-name input::placeholder { color:var(--muted); font-size:14px; }
+.clock-actions { display:flex; justify-content:center; gap:15px; margin-top:20px; }
+.clock-actions .button { flex:1; min-height:54px; font-size:16px; white-space:normal; }
+.clock-actions .button.primary { background:#6046ed; color:#fff; border-color:#6046ed; }
+.clock-actions .button.secondary { border-color:var(--accent); color:var(--accent); }
+.clock-help { color:var(--muted); font-size:14px; line-height:1.6; margin:17px 0 0; }
+.clock-presets { display:flex; justify-content:center; gap:10px; margin:22px 0; }
+.clock-presets button { padding:10px 20px; border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--muted); font-weight:600; }
+.clock-presets button[aria-pressed="true"] { color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+.clock-time-fields { display:flex; gap:14px; margin:22px 0; }
+.clock-time-fields label { display:flex; flex-direction:column; gap:8px; color:var(--muted); font-size:14px; flex:1; min-width:0; }
+.clock-time-fields input { font-size:25px; text-align:center; padding:12px 4px; font-variant-numeric:tabular-nums; }
+.clock-history { margin-top:26px; padding-top:23px; border-top:1px solid var(--line); }
+.clock-history-list { display:grid; }
+.clock-history-list > button { display:flex; align-items:center; gap:19px; width:100%; background:none; color:var(--text); border:0; border-bottom:1px solid var(--line); padding:15px 0; text-align:left; }
+.clock-history-list > button:last-child { border-bottom:0; }
+.clock-history-list > button:hover { background:var(--subtle); }
+.clock-history-list > button > span:nth-child(2) { flex:1; min-width:0; display:flex; flex-direction:column; gap:5px; }
+.clock-history-list strong { font-size:16px; overflow-wrap:anywhere; }
+.clock-history-list small { color:var(--muted); font-size:14px; }
+.clock-history-icon { color:var(--muted); background:var(--subtle); border-radius:50%; width:48px; height:48px; display:grid; place-items:center; flex-shrink:0; }
+.clock-history-empty { color:var(--muted); line-height:1.5; padding:10px 0 18px; }
+.clock-footer { display:flex; justify-content:space-between; gap:18px; margin-top:32px; color:var(--muted); font-size:12px; }
+.clock-layout-minimal .clock-body { display:block; }
+.clock-layout-minimal .clock-stage { max-width:510px; margin:auto; padding:0; }
+.clock-layout-minimal .clock-status,.clock-layout-minimal .clock-session-label { display:none; }
+.clock-layout-minimal .clock-face { width:280px; margin-bottom:23px; }
+.clock-layout-minimal .clock-digits strong { font-size:78px; }
+.clock-layout-minimal .clock-digits > span { font-size:16px; }
+.clock-layout-minimal .clock-presets { margin:19px 0; }
+.clock-layout-minimal .clock-history { max-width:800px; margin:32px auto 0; }
+.clock-layout-digital .clock-body { grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr); }
+.clock-layout-digital .clock-stage { padding:42px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.clock-layout-digital .clock-face { width:100%; aspect-ratio:auto; margin:38px 0 10px; }
+.clock-layout-digital .clock-digits strong { font-size:clamp(45px,5.6vw,88px); letter-spacing:-3px; }
+.clock-layout-digital .clock-digits > span { margin-top:14px; }
+.clock-layout-digital .clock-presets { justify-content:flex-start; }
+.clock-layout-digital .clock-presets button { padding:9px 16px; }
+.clock-layout-digital .clock-fields { gap:16px; }
+.clock-dialog { background:var(--surface); color:var(--text); }
+.clock-dialog > p { margin:12px 0 20px; line-height:1.6; }
+.clock-choice-group { border:0; padding:0; margin:24px 0; display:grid; gap:10px; }
+.clock-choice-group legend { font-weight:650; margin-bottom:12px; }
+.clock-choice-group label { display:flex; align-items:center; gap:12px; border:1px solid var(--line); padding:14px; border-radius:10px; cursor:pointer; }
+.clock-choice-group label.selected { border-color:var(--accent); background:var(--accent-soft); }
+.clock-choice-group input { accent-color:var(--accent); margin:0; flex-shrink:0; }
+.clock-choice-group label > span { flex:1; display:grid; gap:5px; }
+.clock-choice-group small { color:var(--muted); line-height:1.5; }
+.clock-theme-choices { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.clock-theme-choices legend { grid-column:1/-1; }
+.clock-theme-choices label { font-size:13px; padding:13px 9px; }
+.clock-saved-note { white-space:pre-wrap; overflow-wrap:anywhere; }
+.nav-item.clock-nav { margin-left:20px; width:calc(100% - 20px); }
+@media(min-width:1600px) { .clock-face { width:400px; } }
+@media(max-width:1100px) { .clock-stage { padding-left:10px; padding-right:20px; } .clock-session-panel { padding-left:22px; } .clock-tabs { gap:5px; } .clock-tabs > button { padding:14px; } .clock-body,.clock-layout-digital .clock-body { grid-template-columns:minmax(0,1fr) minmax(240px,1fr); } .clock-actions { flex-wrap:wrap; } .clock-actions .button { min-width:140px; } .clock-presets button { padding:9px 13px; } }
+@media(max-width:900px) { .clock-body,.clock-layout-digital .clock-body { display:block; } .clock-stage { max-width:530px; margin:auto; padding:0 0 20px; } .clock-session-panel { border-left:0; border-top:1px solid var(--line); padding:24px 0 0; } .clock-face { width:310px; } .clock-digits strong { font-size:72px; } .clock-layout-digital .clock-stage { padding:20px 0; } .clock-layout-digital .clock-digits strong { font-size:clamp(44px,9vw,86px); } .clock-plugin .workspace-heading h1 { font-size:38px; } .clock-settings-button span { display:none; } .clock-settings-button { width:43px; padding:10px; } }
+@media(max-width:540px) { .clock-plugin .workspace-heading > div > p { font-size:15px; } .clock-plugin .workspace-heading h1 { font-size:33px; } .clock-tabs { gap:0; } .clock-tabs > button { flex:1; padding:13px 6px; font-size:13px; gap:5px; justify-content:center; } .clock-tabs svg { width:18px; } .clock-face,.clock-layout-minimal .clock-face { max-width:100%; width:270px; } .clock-digits strong { font-size:60px; } .clock-footer { flex-direction:column; gap:8px; } .clock-theme-choices { grid-template-columns:1fr; } .clock-dialog { width:calc(100vw - 28px); padding:22px; } .clock-actions { gap:10px; } }
+
+.workspace-main:has(.clock-plugin) { padding-top:24px; }
+.clock-plugin .breadcrumb { margin-bottom:17px; }
+.clock-layout-minimal .clock-stage { max-width:464px; }
+.clock-layout-minimal .clock-name { margin-bottom:16px; }
+.clock-layout-minimal .clock-face { width:320px; margin-bottom:0; }
+.clock-layout-minimal.clock-is-idle .clock-ring-progress { visibility:hidden; }
+.clock-digits small { color:var(--muted); font-size:16px; font-weight:500; margin-bottom:12px; }
+.clock-layout-minimal .clock-history { max-width:none; margin-top:30px; }
+.clock-layout-minimal .clock-presets button { flex:1; }
+@media(max-width:540px) { .clock-layout-minimal .clock-face { width:270px; } .clock-plugin .error-banner { flex-wrap:wrap; } }
+
+.clock-optional-fields { margin:18px 0; color:var(--muted); }
+.clock-optional-fields summary { cursor:pointer; font-size:13px; }
+.clock-optional-fields .clock-fields { color:var(--text); }
+.clock-layout-digital .clock-status { background:none; color:var(--muted); font-size:20px; }
+.clock-layout-digital .clock-status svg { display:none; }
+.clock-layout-digital .clock-session-panel > .clock-help { text-align:center; }
+.app-shell[data-clock-theme="dark"] .clock-actions .button.primary { background:#b2a2ff; color:#141326; border-color:#b2a2ff; }
+@media(min-width:1101px) { .clock-layout-digital .clock-digits strong { font-size:clamp(60px,9.3vw,140px); } }
+
+.clock-layout-digital .clock-presets button { flex:1; padding:12px 8px; font-size:16px; }
+.clock-layout-digital .clock-time-fields input { font-size:30px; padding:16px 4px; }
+.clock-layout-digital .clock-actions .button { font-size:18px; min-height:60px; }
+
+.main-content.workspace-main:has(.clock-layout-minimal) { padding-top:16px; }
+.clock-layout-minimal .workspace-heading { margin-bottom:12px; }
+.clock-layout-minimal .clock-tabs { margin-bottom:23px; }
+.clock-layout-minimal .clock-name { gap:5px; margin-bottom:9px; }
+.clock-layout-minimal .clock-name input { padding:11px 16px; }
+.clock-layout-minimal .clock-presets { margin:4px 0; }
+.clock-layout-minimal .clock-actions { margin-top:12px; }
+.clock-layout-minimal .clock-help { margin-top:10px; }
+.clock-layout-minimal .clock-history { margin-top:20px; padding-top:16px; }
+.clock-layout-minimal .clock-history h2 { margin-bottom:10px; }
+.clock-layout-minimal .clock-history-list > button { padding:10px 0; }
+.clock-layout-minimal .clock-history-icon { width:36px; height:36px; }
+
+@media(max-width:900px) { .nav-item.clock-nav { margin-left:0; width:100%; } }

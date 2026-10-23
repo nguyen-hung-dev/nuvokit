@@ -1,9 +1,11 @@
 mod backup;
+mod clock;
 mod data;
 pub mod engine;
 pub mod model;
 mod platform;
 mod store;
+mod updates;
 mod verification;
 use engine::Engine;
 use model::*;
@@ -11,6 +13,33 @@ use std::sync::{atomic::Ordering, Arc};
 use tauri::{ipc::Channel, Manager, State};
 pub fn verify_data() -> Result<(), String> {
     data::verify()
+}
+
+#[tauri::command]
+async fn get_clock(engine: State<'_, Arc<Engine>>) -> Result<clock::ClockSnapshot, String> {
+    let engine = engine.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || engine.store.clock())
+        .await
+        .map_err(|_| "Không đọc được Đồng hồ.".to_string())?
+}
+#[tauri::command]
+async fn save_clock(
+    engine: State<'_, Arc<Engine>>,
+    state: clock::ClockState,
+    expected_revision: u64,
+    completed: Option<clock::ClockSession>,
+    updates: State<'_, Arc<updates::Updates>>,
+) -> Result<u64, String> {
+    let engine = engine.inner().clone();
+    let updates = updates.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || {
+        let _writes = updates.write_gate.lock().map_err(|_| "Dữ liệu đang bận.")?;
+        engine
+            .store
+            .save_clock(&state, expected_revision, completed.as_ref())
+    })
+    .await
+    .map_err(|_| "Không lưu được Đồng hồ.".to_string())?
 }
 
 #[tauri::command]
@@ -127,7 +156,9 @@ fn set_preferences(
     preferences: Preferences,
     engine: State<'_, Arc<Engine>>,
     window: tauri::WebviewWindow,
+    updates: State<'_, Arc<updates::Updates>>,
 ) -> Result<(), String> {
+    let _writes = updates.write_gate.lock().map_err(|_| "Dữ liệu đang bận.")?;
     engine.store.save_preferences(&preferences)?;
     let theme = if preferences.theme == "dark" {
         tauri::Theme::Dark
@@ -173,10 +204,10 @@ async fn finish_verification(
         let installed = report.dependencies.iter().any(|item| item.id == engine::PACKAGE_ID && item.status == "ready");
         let (memory, cpu) = verification::measure_resources();
         let startup = runtime.ready_ms.load(Ordering::SeqCst);
-        let functional = startup > 0 && startup <= 3000 && report.scan_ms <= 5000 && cpu <= 2.0 && installed && report.os.supported && result.channel_events > 0 && result.theme_persistence;
+        let functional = startup > 0 && startup <= 3000 && report.scan_ms <= 5000 && cpu <= 2.0 && installed && report.os.supported && result.channel_events > 0 && result.theme_persistence && result.clock_persistence;
         let baseline = result.phase == "baseline";
         let pass = functional && if baseline { memory <= 350.0 } else { runtime.baseline_passed.load(Ordering::SeqCst) };
-        println!("{}", serde_json::json!({ "phase": result.phase, "uiReadyMs": startup, "scanMs": report.scan_ms, "workingSetMiB": (memory * 10.0).round() / 10.0, "idleCpuPercent": (cpu * 100.0).round() / 100.0, "gpuStatus": result.gpu_status, "ipcChannelEvents": result.channel_events, "themePersistence": result.theme_persistence, "optionalInstallVerified": installed, "supportedOs": report.os.supported, "memoryBudgetMet": memory <= 350.0, "functionalChecksPassed": functional, "coreBudgetsPassed": pass }));
+        println!("{}", serde_json::json!({ "phase": result.phase, "uiReadyMs": startup, "scanMs": report.scan_ms, "workingSetMiB": (memory * 10.0).round() / 10.0, "idleCpuPercent": (cpu * 100.0).round() / 100.0, "gpuStatus": result.gpu_status, "ipcChannelEvents": result.channel_events, "themePersistence": result.theme_persistence, "clockPersistence": result.clock_persistence, "optionalInstallVerified": installed, "supportedOs": report.os.supported, "memoryBudgetMet": memory <= 350.0, "functionalChecksPassed": functional, "coreBudgetsPassed": pass }));
         if baseline { runtime.baseline_passed.store(pass, Ordering::SeqCst); }
         else { runtime.completed.store(true, Ordering::SeqCst); app.exit(if pass { 0 } else { 1 }); }
     }).await.map_err(|_| "Không hoàn tất phép đo nội bộ.".to_string())?;
@@ -185,7 +216,9 @@ async fn finish_verification(
 
 pub fn run() {
     let verify = std::env::args().any(|arg| arg == "--verify-core");
-    let temporary = std::env::args().any(|arg| arg == "--temporary-profile");
+    let verify_update =
+        std::env::args().any(|arg| arg == "--verify-update" || arg == "--verify-update-local");
+    let temporary = verify_update || std::env::args().any(|arg| arg == "--temporary-profile");
     let runtime = Arc::new(verification::Runtime::new(verify));
     let test_root = (verify || temporary).then(|| {
         std::env::temp_dir().join(format!(
@@ -202,6 +235,7 @@ pub fn run() {
     let setup_root = test_root.clone();
     let setup_runtime = runtime.clone();
     tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(move |app| {
             let root = match &setup_root {
                 Some(root) => root.clone(),
@@ -216,9 +250,14 @@ pub fn run() {
                     return Err(std::io::Error::other(message).into());
                 }
             };
+            let updater = Arc::new(updates::Updates::new(engine.root.clone(), setup_root.is_some()).map_err(std::io::Error::other)?);
+            // A broken update cache must not stop the main app or reset user data.
+            if updater.restore_cached(app.handle()).is_err() { updater.clear_cached_check(); }
+            app.manage(updater);
             let theme = if engine.store.preferences().map_err(std::io::Error::other)?.theme == "dark" { tauri::Theme::Dark } else { tauri::Theme::Light };
             app.manage(engine);
             app.manage(setup_runtime.clone());
+            if verify_update { updates::verify(app.handle().clone()); return Ok(()); }
             let mut window = tauri::WebviewWindowBuilder::from_config(app.handle(), &app.config().app.windows[0])?;
             if let Some(root) = &setup_root {
                 // Isolate WebView cookies/localStorage/cache too, not just SQLite.
@@ -240,6 +279,14 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            updates::update_status,
+            updates::set_update_channel,
+            updates::check_update,
+            updates::download_update,
+            updates::cancel_update,
+            updates::install_update,
+            get_clock,
+            save_clock,
             get_storage_info,
             export_backup,
             prepare_restore,

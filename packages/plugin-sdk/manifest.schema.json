@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NuvoKit plugin manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "apiVersion", "id", "name", "version", "description", "publisher", "license", "entry", "icon", "platforms", "permissions"],
+  "properties": {
+    "formatVersion": { "const": 1 },
+    "apiVersion": { "const": 1 },
+    "id": { "type": "string", "maxLength": 120, "pattern": "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9-]*){2,}$" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+    "version": { "type": "string", "maxLength": 32, "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+    "description": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "publisher": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "license": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "entry": { "const": "ui/index.html" },
+    "icon": { "const": "assets/icon.svg" },
+    "platforms": { "type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true, "items": { "enum": ["windows", "macos", "web"] } },
+    "permissions": { "type": "array", "maxItems": 2, "uniqueItems": true, "items": { "enum": ["storage.read", "storage.write"] } }
+  }
+}

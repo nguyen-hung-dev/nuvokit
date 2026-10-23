@@ -34,10 +34,10 @@ impl Store {
             if current > SCHEMA {
                 return Err("Dữ liệu cần bản NuvoKit mới hơn.".into());
             }
-            if current == 1 {
+            if current > 0 && current < SCHEMA {
                 // Read the complete logical snapshot under the same write lock
                 // as the migration, including rows still present in the WAL.
-                let old = Bundle::new(Self::payload_from(&tx)?, 1)?;
+                let old = Bundle::new(Self::payload_from(&tx)?, current)?;
                 store.recovery(&old, "migration")?;
             }
             if current == 0 {
@@ -52,6 +52,7 @@ impl Store {
             if current < SCHEMA {
                 tx.execute_batch("CREATE INDEX IF NOT EXISTS job_history_created_at ON job_history(created_at DESC); CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL); CREATE TABLE IF NOT EXISTS data_events(id INTEGER PRIMARY KEY, action TEXT NOT NULL, created_at TEXT NOT NULL); INSERT OR IGNORE INTO schema_migrations VALUES(1,strftime('%Y-%m-%dT%H:%M:%fZ','now')); INSERT OR IGNORE INTO schema_migrations VALUES(2,strftime('%Y-%m-%dT%H:%M:%fZ','now')); PRAGMA user_version=2;").map_err(|_| "Không nâng cấp được dữ liệu; bản cũ được giữ.")?;
             }
+            tx.execute_batch("CREATE TABLE IF NOT EXISTS clock_history(id TEXT PRIMARY KEY,ended_at INTEGER NOT NULL,value TEXT NOT NULL); CREATE INDEX IF NOT EXISTS clock_history_ended ON clock_history(ended_at DESC); INSERT OR IGNORE INTO schema_migrations VALUES(3,strftime('%Y-%m-%dT%H:%M:%fZ','now')); PRAGMA user_version=3;").map_err(|_| "Không nâng cấp được dữ liệu Đồng hồ.")?;
             tx.commit().map_err(|_| "Chưa hoàn tất nâng cấp dữ liệu.")?;
         }
         db.execute_batch("PRAGMA journal_mode=WAL;")
@@ -63,9 +64,11 @@ impl Store {
             .map_err(|_| "Cấu trúc lịch sử không hợp lệ.")?;
         db.prepare("SELECT action FROM data_events LIMIT 0")
             .map_err(|_| "Cấu trúc dữ liệu lõi không hợp lệ.")?;
+        db.prepare("SELECT id,ended_at,value FROM clock_history LIMIT 0")
+            .map_err(|_| "Cấu trúc Đồng hồ không hợp lệ.")?;
         Ok(store)
     }
-    fn open(&self) -> Result<Connection, String> {
+    pub(crate) fn open(&self) -> Result<Connection, String> {
         backup::regular_path(&self.path)?;
         let db = Connection::open(&self.path).map_err(|_| "Không thể mở dữ liệu lõi.")?;
         db.busy_timeout(std::time::Duration::from_secs(5))
@@ -108,6 +111,7 @@ impl Store {
         Ok(Payload {
             preferences: Preferences { theme },
             history,
+            clock: crate::clock::backup_data(db)?,
         })
     }
     pub fn bundle(&self) -> Result<Bundle, String> {
@@ -116,6 +120,18 @@ impl Store {
             .transaction()
             .map_err(|_| "Không tạo được snapshot dữ liệu.")?;
         Bundle::new(Self::payload_from(&tx)?, SCHEMA)
+    }
+    pub fn snapshot_for_update(&self) -> Result<String, String> {
+        let bundle = self.bundle()?;
+        if bundle
+            .payload
+            .clock
+            .as_ref()
+            .is_some_and(|clock| clock.state.active())
+        {
+            return Err("Kết thúc phiên Đồng hồ trước khi cài cập nhật.".into());
+        }
+        self.recovery(&bundle, "update")
     }
     fn recovery(&self, bundle: &Bundle, reason: &str) -> Result<String, String> {
         let folder = self
@@ -142,7 +158,13 @@ impl Store {
         let tx = db
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(|_| "Dữ liệu đang bận; thử lại khi tác vụ khác hoàn tất.")?;
-        let recovery = self.recovery(&Bundle::new(Self::payload_from(&tx)?, SCHEMA)?, "restore")?;
+        let (clock_revision, clock_state) = crate::clock::read_state(&tx)?;
+        if clock_state.active() {
+            return Err("Kết thúc phiên Đồng hồ trước khi khôi phục dữ liệu.".into());
+        }
+        let prior = Self::payload_from(&tx)?;
+        let clock_data = bundle.payload.clock.as_ref().or(prior.clock.as_ref());
+        let recovery = self.recovery(&Bundle::new(prior.clone(), SCHEMA)?, "restore")?;
         tx.execute_batch("DELETE FROM preferences; DELETE FROM job_history;")
             .map_err(|_| "Không chuẩn bị được khôi phục; dữ liệu hiện tại được giữ.")?;
         tx.execute(
@@ -156,6 +178,9 @@ impl Store {
                 params![row.id, row.kind, row.status, row.created_at],
             )
             .map_err(|_| "Không khôi phục được lịch sử; dữ liệu hiện tại được giữ.")?;
+        }
+        if let Some(clock) = clock_data {
+            crate::clock::restore_data(&tx, clock, clock_revision)?;
         }
         tx.execute(
             "INSERT INTO data_events(action,created_at) VALUES('restore',?1)",

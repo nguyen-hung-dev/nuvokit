@@ -32,6 +32,7 @@ pub struct RestorePreview {
     pub app_version: String,
     pub schema_version: u32,
     pub history_entries: usize,
+    pub clock_sessions: Option<usize>,
     pub theme: String,
 }
 #[derive(Serialize)]
@@ -148,6 +149,7 @@ impl Engine {
             app_version: bundle.app_version.clone(),
             schema_version: bundle.schema_version,
             history_entries: bundle.payload.history.len(),
+            clock_sessions: bundle.payload.clock.as_ref().map(|c| c.history.len()),
             theme: bundle.payload.preferences.theme.clone(),
         };
         *self

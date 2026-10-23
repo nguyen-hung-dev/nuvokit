@@ -1,15 +1,15 @@
 # Cài NuvoKit cho người dùng Windows
 
-Cập nhật: **23/10/2026**. Đích thử nghiệm: **Windows 11 x64**.
+Cập nhật: **24/10/2026**. Đích thử nghiệm: **Windows 11 x64**.
 
 ## Tình trạng bộ cài
 
-- Có [bộ cài GUI 0.1.3](https://github.com/nguyen-hung-dev/nuvokit/releases/download/v0.1.3/NuvoKit_0.1.3_x64-setup.exe),
+- Có [bộ cài GUI 0.1.4](https://github.com/nguyen-hung-dev/nuvokit/releases/download/v0.1.4/NuvoKit_0.1.4_x64-setup.exe),
   bản preview chưa ký số, theo bố cục wizard mẫu 1.
 - Chủ dự án xác nhận clone, build, cài và mở app thành công trên máy đang dùng.
-  Kiểm chứng 0.1.3 trên Windows Sandbox sạch/thiếu WebView2 đã có kết quả; phạm vi
+  Kiểm chứng 0.1.4 trên Windows Sandbox sạch/thiếu WebView2 đã có kết quả; phạm vi
   máy vật lý và lỗi nâng cao xem trong hồ sơ kiểm chứng.
-- File phát hành ở [GitHub Releases v0.1.3](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.3),
+- File phát hành ở [GitHub Releases v0.1.4](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.4),
   kèm checksum và notices của dependencies.
 - Mẫu 1 đã được duyệt và triển khai. Xem [đặc tả](specs/windows-installation.md) và
   [phạm vi kiểm chứng](verification/core-data-0.1.3.md) trước khi dùng rộng rãi.
@@ -66,7 +66,7 @@ Mở **Cài đặt → Dữ liệu & sao lưu**:
 4. **Dọn file tạm** chỉ dọn cache NuvoKit và file tải dở đã biết; không xóa theme,
    lịch sử, gói hoàn chỉnh, bản phục hồi hoặc cache WebView đang dùng.
 
-Bản 0.1.3 nâng dữ liệu schema 1 → 2 bằng transaction. App schema 1 cũ sẽ từ chối
+Bản 0.1.4 nâng dữ liệu schema 1 → 2 bằng transaction. App schema 1 cũ sẽ từ chối
 mở schema 2 để tránh hạ cấp; tiếp tục dùng bản mới. Không tự xóa/reset DB khi lỗi
 migration. Giới hạn backup hiện tại: 16 MiB và 100.000 mục lịch sử.
 
@@ -111,3 +111,11 @@ khi biết tổng thật; khi installer ngoài đang chạy, dùng thanh chờ v
 Lỗi có **Thử lại**, có thể đổi thư mục; **Xem chi tiết** mở lịch sử bước. Hoàn tất
 chỉ được báo sau kiểm tra SHA-256; nút **Mở NuvoKit** mở app. Dữ liệu OCR vẫn là
 gói tùy chọn, có thể cài sau từ giao diện app.
+
+## Cập nhật app đã cài
+
+Mở Cài đặt → Cập nhật ứng dụng. App kiểm tra GitHub theo kênh, hiện thay đổi,
+tải và xác minh chữ ký trước khi cho xác nhận cài. Kết thúc phiên Đồng hồ/chờ
+tác vụ hoàn tất trước khi cài; dữ liệu được giữ và có snapshot phục hồi.
+Bản 0.1.3 trở về trước cần tải/chạy bộ cài 0.1.4 một lần. Máy người dùng không
+cần Git/npm. Xem [luồng đầy đủ](specs/updates-v1.md).

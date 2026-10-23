@@ -5,13 +5,15 @@ use std::{collections::HashSet, fs, io::Read, path::Path};
 
 pub const MAX_BYTES: u64 = 16 * 1024 * 1024;
 pub const MAX_HISTORY: usize = 100_000;
-pub const SCHEMA: u32 = 2;
+pub const SCHEMA: u32 = 3;
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Payload {
     pub preferences: Preferences,
     pub history: Vec<HistoryEntry>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clock: Option<crate::clock::ClockData>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -34,7 +36,11 @@ fn digest(payload: &Payload) -> Result<String, String> {
 impl Bundle {
     pub fn new(payload: Payload, schema_version: u32) -> Result<Self, String> {
         let bundle = Self {
-            format_version: 1,
+            format_version: if schema_version < 3 && payload.clock.is_none() {
+                1
+            } else {
+                2
+            },
             application: "com.nuvokit.desktop".into(),
             app_version: env!("CARGO_PKG_VERSION").into(),
             schema_version,
@@ -47,7 +53,9 @@ impl Bundle {
     }
 
     fn validate(&self) -> Result<(), String> {
-        if self.format_version != 1
+        if !(1..=2).contains(&self.format_version)
+            || (self.format_version == 1
+                && (self.payload.clock.is_some() || self.schema_version > 2))
             || self.application != "com.nuvokit.desktop"
             || !(1..=SCHEMA).contains(&self.schema_version)
         {
@@ -76,6 +84,9 @@ impl Bundle {
             {
                 return Err("Lịch sử trong bản sao lưu không hợp lệ hoặc trùng ID.".into());
             }
+        }
+        if let Some(clock) = &self.payload.clock {
+            clock.validate()?;
         }
         if self.sha256 != digest(&self.payload)? {
             return Err("Bản sao lưu không khớp SHA-256. Dữ liệu hiện tại được giữ nguyên.".into());
@@ -183,6 +194,7 @@ mod tests {
                     theme: "dark".into(),
                 },
                 history: vec![],
+                clock: None,
             },
             SCHEMA,
         )
@@ -194,7 +206,7 @@ mod tests {
         assert!(Bundle::parse(&bytes).is_ok());
         let original: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
         for (key, value) in [
-            ("formatVersion", serde_json::json!(2)),
+            ("formatVersion", serde_json::json!(999)),
             ("schemaVersion", serde_json::json!(999)),
             ("application", serde_json::json!("other.app")),
             ("sha256", serde_json::json!("0")),

@@ -2,9 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Archive, ArrowDownToLine, CheckCircle2, CircleAlert, Database, FolderOpen, HardDrive, LoaderCircle, RefreshCw, ShieldCheck, Trash2, Upload, X } from "lucide-react";
 import { formatBytes, type CoreAdapter, type Preferences, type RestorePreview, type StorageInfo } from "@nuvokit/core";
 
-export function DataSettings({ adapter, installing, onRestored, onBusy }: {
+export function DataSettings({ adapter, installing, restoreBlocked = false, onRestored, onBusy }: {
   adapter: CoreAdapter;
   installing: boolean;
+  restoreBlocked?: boolean;
   onRestored(preferences: Preferences): Promise<void>;
   onBusy(busy: boolean): void;
 }) {
@@ -61,12 +62,14 @@ export function DataSettings({ adapter, installing, onRestored, onBusy }: {
     }
   });
   const prepare = () => run("prepare", async () => {
+    if (restoreBlocked) return;
     const value = await adapter.prepareRestore();
     if (mounted.current) setRestore(value);
     else if (value) await adapter.discardRestore(value.token);
   });
   const confirm = () => run(restore ? "restore" : "cache", async () => {
     if (restore) {
+      if (restoreBlocked) return;
       const result = await adapter.restoreBackup(restore.token);
       if (mounted.current) {
         setRestore(null);
@@ -93,6 +96,7 @@ export function DataSettings({ adapter, installing, onRestored, onBusy }: {
     {error && <div className="data-message error-banner" role="alert"><CircleAlert size={18}/><span>{error}</span></div>}
     {notice && <div className="data-message data-success" role="status"><CheckCircle2 size={18}/><span>{notice}</span></div>}
     {installing && <p className="note"><LoaderCircle size={17} className="spin"/>Chờ tác vụ hiện tại hoàn tất để quản lý dữ liệu.</p>}
+    {restoreBlocked && <p className="note"><CircleAlert size={17}/>Kết thúc phiên Đồng hồ trước khi khôi phục dữ liệu. Bạn vẫn có thể sao lưu phiên đang chạy.</p>}
     <div className="storage-grid" aria-busy={loading}>
       {[
         { label: "Cài đặt & lịch sử", value: info?.databaseBytes, icon: Database },
@@ -105,14 +109,14 @@ export function DataSettings({ adapter, installing, onRestored, onBusy }: {
     </div>
     <div className="data-actions">
       <div className="data-action-copy"><strong>Sao lưu & khôi phục</strong>
-        <p>Gồm giao diện sáng/tối và toàn bộ lịch sử tác vụ. Gói tải thêm và cache không nằm trong bản sao; có thể tải lại gói trong Thành phần.</p>
+        <p>Gồm giao diện sáng/tối, lịch sử tác vụ, cài đặt và các phiên Đồng hồ. Gói tải thêm và cache không nằm trong bản sao; có thể tải lại gói trong Thành phần.</p>
         <span className="muted small">{info?.lastBackupAt ? `Lần sao lưu gần nhất: ${new Date(info.lastBackupAt).toLocaleString("vi-VN")}` : "Chưa ghi nhận bản sao lưu thủ công."} File .nuvobak không mã hóa.</span>
       </div>
       <div className="data-action-buttons">
         <button className="button primary" disabled={blocked} onClick={() => void exportBackup()}>
           {working === "backup" ? <LoaderCircle size={17} className="spin"/> : <ArrowDownToLine size={17}/>}Sao lưu dữ liệu
         </button>
-        <button className="button secondary" disabled={blocked} onClick={() => void prepare()}>
+        <button className="button secondary" disabled={blocked || restoreBlocked} onClick={() => void prepare()}>
           {working === "prepare" ? <LoaderCircle size={17} className="spin"/> : <Upload size={17}/>}Khôi phục từ file
         </button>
       </div>
@@ -138,13 +142,14 @@ export function DataSettings({ adapter, installing, onRestored, onBusy }: {
           <div><dt>Ngày sao lưu</dt><dd>{new Date(restore.createdAt).toLocaleString("vi-VN")}</dd></div>
           <div><dt>Phiên bản ứng dụng</dt><dd>{restore.appVersion}</dd></div>
           <div><dt>Lịch sử tác vụ</dt><dd>{restore.historyEntries.toLocaleString("vi-VN")} mục</dd></div>
+          <div><dt>Phiên Đồng hồ</dt><dd>{restore.clockSessions == null ? "Bản cũ: giữ Đồng hồ hiện tại" : `${restore.clockSessions.toLocaleString("vi-VN")} phiên`}</dd></div>
           <div><dt>Giao diện</dt><dd>{restore.theme === "dark" ? "Tối" : "Sáng"}</dd></div>
         </dl>
       </> : <p className="muted">Dọn khoảng {formatBytes(info?.temporaryBytes ?? null)} file tạm. Không xóa dữ liệu, gói đã cài, cache WebView đang dùng hoặc bản phục hồi.</p>}
       {error && <p className="preview-note" role="alert">{error}</p>}
       <div className="dialog-actions">
         <button ref={cancelButton} className="button secondary" disabled={!!working} onClick={close}>Hủy</button>
-        <button className="button primary" disabled={!!working || installing} onClick={() => void confirm()}>{working ? <LoaderCircle size={17} className="spin"/> : restore ? <Upload size={17}/> : <Trash2 size={17}/>} {working ? "Đang xử lý…" : restore ? "Khôi phục dữ liệu" : "Dọn file tạm"}</button>
+        <button className="button primary" disabled={!!working || installing || (!!restore && restoreBlocked)} onClick={() => void confirm()}>{working ? <LoaderCircle size={17} className="spin"/> : restore ? <Upload size={17}/> : <Trash2 size={17}/>} {working ? "Đang xử lý…" : restore ? "Khôi phục dữ liệu" : "Dọn file tạm"}</button>
       </div>
     </dialog>
   </section>;

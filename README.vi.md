@@ -1,5 +1,13 @@
 # NuvoKit
 
+Source đang phát triển có **Tổng quan / Thư viện plugin / Đã cài**, chuyển lưới và
+danh sách có chi tiết. **Đồng hồ tích hợp dùng được**: tập trung/đếm ngược/bấm giờ,
+ba bố cục có thể đổi trong Cài đặt Đồng hồ, theme riêng và lịch sử lưu trên máy.
+Các plugin khác vẫn minh họa cài/mở/gỡ trong phiên; chưa tải/chạy gói bên ngoài.
+[Gói và SDK tối thiểu v1](docs/specs/plugin-package-v1.md) đã chốt; có schema,
+validator/client nội bộ, chưa có loader/bridge host. Các phần này được đưa vào
+bộ cài 0.1.4 cùng updater có chữ ký. Xem [đặc tả Đồng hồ](docs/specs/clock-v1.md).
+
 **Your apps. Your data. Your space.**
 
 Nền tảng app cá nhân: người dùng cài những app con mình cần, dùng chung thiết kế,
@@ -9,7 +17,7 @@ liên kết dữ liệu và tùy chọn kết nối AI.
 
 ## Trạng thái
 
-Ngày **23/10/2026**: Đã có **bản preview 0.1.3 cho Windows 11 x64**:
+Ngày **24/10/2026**: **bản preview 0.1.4 cho Windows 11 x64**:
 kiểm tra môi trường, đọc CPU/RAM/đĩa/GPU, theme sáng/tối, SQLite lưu cài đặt/lịch sử
 và cài gói dữ liệu OCR tùy chọn có kiểm tra SHA-256. Chưa có engine OCR, SDK/kho
 mini-app. Đã có bộ cài theo mẫu 1 được duyệt; bản trình duyệt vẫn dùng dữ liệu mẫu.
@@ -24,6 +32,16 @@ Lõi dùng React/TypeScript + Tauri/Rust + SQLite, chia sẻ UI/nghiệp vụ qu
 Giấy phép, phạm vi MVP mini-app và ngày phát hành ổn định chưa chốt. Dự án hướng đến mã
 nguồn mở; hiện chưa chọn và cấp giấy phép nguồn mở.
 
+## Cập nhật
+
+User cài EXE: **Cài đặt → Cập nhật ứng dụng** để chọn kênh, kiểm tra, tải và xác
+nhận cài gói có chữ ký từ GitHub Releases. Đồng hồ cập nhật cùng app. Bản 0.1.3
+trở về trước cần cài bộ cài 0.1.4 một lần để có updater.
+
+Dev chạy source: `npm run source:check` để kiểm tra, `npm run source:update` để
+fast-forward và cài dependencies; script từ chối khi có sửa đổi local. Xem
+[luồng cập nhật](docs/specs/updates-v1.md).
+
 ## Cài đặt
 
 ### Người dùng thông thường: cài qua .exe
@@ -31,7 +49,7 @@ nguồn mở; hiện chưa chọn và cấp giấy phép nguồn mở.
 Bản thử nghiệm dành cho **Windows 11 x64**. Máy chạy app đã cài không cần Git,
 Node.js/npm, Rust hay Visual Studio; người dùng không phải chạy lệnh terminal.
 
-**Tải bộ cài:** [NuvoKit 0.1.3 x64 Setup](https://github.com/nguyen-hung-dev/nuvokit/releases/download/v0.1.3/NuvoKit_0.1.3_x64-setup.exe) · [Ghi chú phát hành](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.3). Đây là bản preview chưa ký số. File ZIP source code không phải bộ cài.
+**Tải bộ cài:** [NuvoKit 0.1.3 x64 Setup](https://github.com/nguyen-hung-dev/nuvokit/releases/download/v0.1.4/NuvoKit_0.1.4_x64-setup.exe) · [Ghi chú phát hành](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.4). Đây là bản preview chưa ký số. File ZIP source code không phải bộ cài.
 
 1. Nhận `NuvoKit_<version>_x64-setup.exe` từ trang phát hành của dự án hoặc chủ dự án.
 2. Nhấp đúp file, chọn thư mục và làm theo wizard cài đặt.
@@ -77,7 +95,7 @@ npm run desktop:bundle
 Đợi build thành công rồi mới mở bộ cài:
 
 ```powershell
-Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.3_x64-setup.exe" -Wait
+Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.4_x64-setup.exe" -Wait
 ```
 
 Tên file trên tương ứng version hiện tại `0.1.3`. Source và build nằm trong thư

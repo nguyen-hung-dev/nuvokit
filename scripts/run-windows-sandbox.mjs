@@ -2,13 +2,13 @@ import { spawn, spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
-import { root, version, compile, payloadApplicationHash, hash } from "./setup-build-lib.mjs";
+import { root, version, compile, payloadApplicationHash, hash, targetRoot } from "./setup-build-lib.mjs";
 
 if (process.platform !== "win32") throw new Error("Windows Sandbox QA requires Windows.");
 const mode = process.argv[2] || "online";
 if (!["online", "offline"].includes(mode)) throw new Error("Choose online or offline.");
 const prepareOnly = process.argv.includes("prepare");
-const binaryRoot = path.join(root, "apps/desktop/src-tauri/target/release");
+const binaryRoot = path.join(targetRoot, "release");
 const payload = path.join(binaryRoot, "bundle/nsis", `NuvoKit_${version}_x64-setup.exe`);
 if (!existsSync(payload)) throw new Error("Run npm run desktop:bundle first.");
 const id = randomUUID().replaceAll("-", "");

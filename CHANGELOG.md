@@ -1,6 +1,23 @@
 # Changelog
 
-## Unreleased
+## 0.1.4 — 2026-10-24 (Windows preview)
+
+- Signed GitHub app updates with channel selection, progress/cancel, signature and
+  signed-version verification, guarded install and data checkpoint.
+- Add a protected developer source update command and a GitHub release workflow;
+  keep private signing material outside Git and binaries in Release assets.
+- Bundle a working Clock with focus/countdown/stopwatch, three switchable layouts,
+  independent theme, pause/resume, finish confirmation and local session history.
+- Persist Clock atomically in SQLite/IndexedDB with revision conflict protection;
+  migrate SQLite to schema 3 with recovery, export backup format 2 including Clock
+  and preserve Clock when restoring a legacy core-only backup.
+
+- Approved main workspace and plugin-library UI with grid/detail view switching,
+  search, category/sort controls, installed filter, light/dark and responsive layouts.
+  Other plugin install/open/remove actions are explicitly session-only UI demonstrations.
+- Accept package format/API v1; add a local plugin SDK workspace, closed manifest
+  schema/validator, scoped client contracts and synthetic contract tests. External
+  package loading, host enforcement and native plugin execution remain unimplemented.
 
 ## 0.1.3 — 2026-10-23 (Windows preview)
 

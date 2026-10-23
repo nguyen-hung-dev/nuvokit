@@ -7,6 +7,8 @@ import { fileURLToPath } from "node:url";
 export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const version = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8")).version;
 if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error("Setup requires a numeric three-part version.");
+if (process.env.CARGO_TARGET_DIR && !path.isAbsolute(process.env.CARGO_TARGET_DIR)) throw new Error("Use an absolute CARGO_TARGET_DIR for installer builds.");
+export const targetRoot = process.env.CARGO_TARGET_DIR || path.join(root, "apps/desktop/src-tauri/target");
 export const output = path.join(root, "output", "windows-setup");
 export const hash = (file) => createHash("sha256").update(readFileSync(file)).digest("hex");
 export function payloadApplicationHash() {

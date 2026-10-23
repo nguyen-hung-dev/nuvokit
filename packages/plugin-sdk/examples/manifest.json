@@ -1,0 +1,14 @@
+{
+  "formatVersion": 1,
+  "apiVersion": 1,
+  "id": "dev.nuvokit.clock",
+  "name": "Đồng hồ",
+  "version": "0.1.0",
+  "description": "Ví dụ manifest; chưa phải gói plugin có thể cài.",
+  "publisher": "NuvoKit",
+  "license": "UNLICENSED",
+  "entry": "ui/index.html",
+  "icon": "assets/icon.svg",
+  "platforms": ["windows", "macos", "web"],
+  "permissions": ["storage.read", "storage.write"]
+}

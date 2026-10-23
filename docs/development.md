@@ -55,18 +55,18 @@ Tại thư mục gốc repo, sau khi `npm ci` hoàn tất:
 
 ```powershell
 npm run desktop:bundle
-Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.3_x64-setup.exe" -Wait
+Start-Process -FilePath ".\output\windows-setup\NuvoKit_0.1.4_x64-setup.exe" -Wait
 ```
 
 Chỉ chạy lệnh mở bộ cài nếu build thành công. Bộ cài NSIS dùng chế độ current-user;
 làm theo wizard để cài rồi mở NuvoKit từ Start menu. Nếu thiếu WebView2, installer
 tải bootstrapper qua Internet. Node/Rust/Build Tools chỉ cần cho máy build.
-Tên file trên tương ứng version `0.1.3` trong cấu hình Tauri; version sau sẽ có tên
+Tên file trên tương ứng version `0.1.4` trong cấu hình Tauri; version sau sẽ có tên
 khác. Hướng dẫn clone từ GitHub nằm trong phần nhà phát triển của [README](../README.vi.md).
-Bản preview trên [Releases](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.3)
+Bản preview trên [Releases](https://github.com/nguyen-hung-dev/nuvokit/releases/tag/v0.1.4)
 chưa ký số. Xem [kiểm chứng](verification/core-data-0.1.3.md) trước khi suy ra
-khả năng trên Windows sạch. Payload NSIS trong `target/` chỉ dành cho wrapper;
-phân phối file GUI ở `output/windows-setup/`.
+khả năng trên Windows sạch. Payload NSIS trong `target/` dùng cho wrapper và updater;
+cài lần đầu dùng file GUI ở `output/windows-setup/`.
 
 ## Wizard native và đóng gói
 
@@ -76,8 +76,7 @@ bootstrapper mà không cần `dotnet` CLI. .NET Framework 4.8 trở lên có s�
 thật. `npm run desktop:bundle` thu notices, build payload với `tauri.payload.conf.json`,
 nhúng payload/hash/logo vào wizard và tạo `SHA256SUMS.txt` trong output.
 
-Payload raw trong `target/` bỏ bootstrap WebView2 vì wizard xử lý trước; chỉ phân
-phối GUI `.exe`. Registry/runtime/payload được kiểm tra lại khi chạy tiếp/thử lại.
+Payload raw trong `target/` bỏ bootstrap WebView2 vì wizard xử lý trước; phân phối GUI `.exe` cho lần đầu, payload ký riêng cho updater. Registry/runtime/payload được kiểm tra lại khi chạy tiếp/thử lại.
 Hash executable được chụp trong hook compile-time của NSIS, lúc Tauri đang áp
 marker bundle. Không thay bằng hash file standalone sau build. Node chạy ở máy
 build cho hook này; máy người dùng không cần Node.
@@ -107,7 +106,7 @@ xác nhận xóa qua UI; xem [phạm vi](verification/core-data-0.1.3.md).
   Không dùng chế độ này làm nơi lưu dữ liệu cá nhân lâu dài.
 - `--smoke-install`: thêm tải/hash/cài/cài lại gói ngôn ngữ trong thư mục tạm riêng.
 - `--verify-core`: mở WebView thật, xác nhận renderer đã vẽ hai frame, gọi normal
-  IPC để lưu/đọc theme, nhận channel cài gói và quét lại. Đo baseline sau 30 giây
+  IPC để lưu/đọc theme, Clock và lịch sử (có `clockPersistence` trong JSON), nhận channel cài gói và quét lại. Đo baseline sau 30 giây
   ổn định + 5 giây lấy mẫu, rồi thử WebGPU và đo lại cùng thời lượng. In metrics
   theo từng pha rồi đóng app; tổng thời gian khoảng 70–100 giây tùy mạng. Dùng
   DB/gói trong thư mục tạm riêng; không dùng dữ liệu người dùng. Watchdog 120 giây.
@@ -130,7 +129,9 @@ guest không trả kết quả thì không đánh dấu đạt. Xem [QA fixtures
 apps/desktop/src/              Entry và desktop/browser adapters
 apps/desktop/src-tauri/src/    Host Rust, Windows APIs, SQLite, dependency jobs
 packages/core/src/            Hợp đồng và nghiệp vụ độc lập nền tảng
-packages/ui/src/              App shell, bốn trang, components và theme tokens
+packages/ui/src/              App shell, trang lõi và thư viện plugin bản mẫu
+packages/plugin-sdk/          API/format v1, manifest validator và SDK client
+plugins/clock/src/            Đồng hồ bundle cùng app (UI/controller), không phải guest loader
 design/                       Brief, prompt, mockup và SVG nguồn
 ```
 
@@ -138,7 +139,25 @@ Browser preview và app desktop dùng cùng UI. Nghiệp vụ không import Taur
 adapter. Đường dẫn/URL gói do host nắm giữ; không cấp shell/file/network trực tiếp
 cho frontend. Native plugin/SDK mở rộng bên thứ ba chưa triển khai.
 
+Source chưa phát hành bổ sung Tổng quan, Thư viện plugin và Đã cài theo ba mockup
+đã duyệt. Nút lưới/danh sách giữ cùng tìm kiếm/bộ lọc và nhớ bố cục trong localStorage
+(`nuvokit.library.view.v1`). Trạng thái cài/gỡ plugin chỉ ở RAM, reset khi reload;
+không ghi DB/gói thật. SDK client là hợp đồng nội bộ, chưa nối host runtime.
+Xem [đặc tả](specs/plugin-package-v1.md) và [SDK](../packages/plugin-sdk/README.md).
+
 Phép thử WebGPU nằm trong frontend platform adapter, không nằm trong nghiệp vụ
 thuần. Metrics cộng working set của app và các WebView2 con; các trang bộ nhớ dùng
 chung có thể được tính nhiều lần. Ghi riêng baseline và sau GPU, không bỏ qua kết
 quả vượt ngưỡng. Startup đo từ vào hàm `run()` native tới sau hai frame có inventory.
+
+## Cập nhật source và phát hành
+
+`npm run source:check` chỉ fetch; `npm run source:update` yêu cầu checkout sạch,
+chỉ fast-forward rồi npm ci/check. Dev tự chạy lại `npm run desktop`.
+
+Build phát hành có updater cần khóa riêng và password qua biến môi trường; không
+lưu khóa trong repo. Workflow Release Windows nhận chúng từ GitHub Secrets.
+Có thể dùng `CARGO_TARGET_DIR` tuyệt đối ngoài repo khi ổ chứa source thiếu chỗ;
+build/NSIS/Sandbox helpers dùng cùng targetRoot.
+
+Xem [quy trình cập nhật/phát hành](specs/updates-v1.md).

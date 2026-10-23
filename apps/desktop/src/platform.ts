@@ -6,9 +6,20 @@ import type {
 } from "@nuvokit/core";
 import { isTauri, invoke, Channel } from "@tauri-apps/api/core";
 import { probeWebGpu } from "./gpu";
+import { browserClock } from "./clock-browser";
 
 const desktop: CoreAdapter = {
   mode: "desktop",
+  updates: {
+    status: () => invoke("update_status"), channel: channel => invoke("set_update_channel", {channel}),
+    check: manual => invoke("check_update", {manual}),
+    download: async (token, progress) => { const events = new Channel<import("@nuvokit/core").UpdateProgress>(); events.onmessage = progress; return invoke("download_update", {token, onEvent: events}); },
+    cancel: () => invoke("cancel_update"), install: token => invoke("install_update", {token}),
+  },
+  clock: {
+    load: () => invoke("get_clock"),
+    save: (state, expectedRevision, completed) => invoke("save_clock", { state, expectedRevision, completed }),
+  },
   scan: () => invoke("scan_environment"),
   install: async (packageId, progress) => {
     const channel = new Channel<JobProgress>();
@@ -94,8 +105,11 @@ function sampleReport(): EnvironmentReport {
     ],
   };
 }
+const previewUpdateStatus = (channel: import("@nuvokit/core").UpdateChannel = "preview"): import("@nuvokit/core").UpdateStatus => ({currentVersion: __APP_VERSION__, channel, supported:false, canInstall:false, lastCheckedAt:null, available:null, message:"Mở app Windows để kiểm tra và cài cập nhật thật. Dev chạy source dùng Git."});
 const preview: CoreAdapter = {
   mode: "preview",
+  updates: {status:async () => previewUpdateStatus(), channel:async channel => previewUpdateStatus(channel), check:async () => previewUpdateStatus(), download:async () => {throw new Error("Mở app Windows để tải cập nhật.");}, cancel:async () => {}, install:async () => {throw new Error("Mở app Windows để cài cập nhật.");}},
+  clock: browserClock(),
   scan: async () => sampleReport(),
   install: async () => {
     throw new Error(
@@ -122,7 +136,7 @@ const preview: CoreAdapter = {
   },
   getHistory: async () => [],
   getStorageInfo: async () => ({
-    schemaVersion: 2, databaseBytes: 65536, packageBytes: 531275,
+    schemaVersion: 3, databaseBytes: 65536, packageBytes: 531275,
     temporaryBytes: 32768, recoveryBytes: 4096, recoveryCount: 1,
     lastBackupAt: null, dataDirectory: "Dữ liệu minh họa · chỉ có trên app Windows", temporarySession: false,
   }),

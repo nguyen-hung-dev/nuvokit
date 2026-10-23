@@ -60,6 +60,7 @@ models/
 *.sqlite3
 *.sqlite3-*
 *.nuvobak
+*.nuvoplugin
 .nuvokit-*.tmp
 *.onnx
 *.gguf

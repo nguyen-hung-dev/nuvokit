@@ -9,18 +9,22 @@ và yêu cầu triển khai đặc tả, mockup, PoC rồi xây lõi.
 - Mục tiêu triển khai/kiểm chứng ban đầu: **Windows 11 x64**. Windows ARM, Windows
   10, macOS, Store và web đầy đủ cần kiểm chứng riêng; không tự nhận hỗ trợ.
 - Ngôn ngữ UI: tiếng Việt; theme sáng/tối dùng chung components và tokens.
-- Bốn trang: Môi trường, Phần cứng, Thành phần, Cài đặt.
+- Bốn trang lõi: Môi trường, Phần cứng, Thành phần, Cài đặt. Source chưa phát hành
+  bổ sung Tổng quan, Thư viện plugin, Đã cài theo [0009](../decisions/0009-plugin-ui-package-sdk.md).
 - Nghiệp vụ và hợp đồng TypeScript dùng chung; desktop adapter gọi host native.
   Browser adapter chỉ là preview dữ liệu mẫu, ghi rõ trong UI.
 
 ## Luồng đầu tiên
 
-Mở app → kiểm tra môi trường → xem cấu hình/trạng thái → mở chi tiết gói còn thiếu
+Luồng lõi ban đầu: mở app → kiểm tra môi trường → xem cấu hình/trạng thái → mở chi tiết gói còn thiếu
 → xác nhận cài → tải/kiểm tra/cài → kiểm tra lại danh sách và lịch sử.
 
 Thiếu gói OCR tùy chọn không ngăn dùng lõi. Không có GPU vẫn đọc cấu hình, quản lý
 phụ thuộc và lưu cài đặt được. Không yêu cầu toolchain Node/Rust/Python cho người
 dùng bản desktop đã build.
+
+Source mới mở vào Tổng quan; kiểm tra lõi vẫn chạy nền và truy cập qua nhóm hệ
+thống. Các trang thư viện dùng catalog bản mẫu, không cài/chạy plugin bên ngoài.
 
 ## Hợp đồng màn hình môi trường
 
@@ -89,7 +93,8 @@ Giấy phép thành phần Apache-2.0 đi kèm gói; không phải giấy phép 
 
 ## Lưu trữ và ranh giới
 
-SQLite schema v2: `preferences`, `job_history`, migration log và data maintenance log.
+Bộ cài 0.1.3 dùng schema v2; source chưa phát hành dùng schema v3 kèm Đồng hồ
+([đặc tả](clock-v1.md)). SQLite lõi: `preferences`, `job_history`, migration log và data maintenance log.
 Schema v1 được nâng cấp bằng transaction sau khi giữ snapshot `.nuvobak`; phiên
 bản mới hơn vẫn bị từ chối để tránh hạ cấp. Theme chỉ nhận `light`/`dark`, tồn tại
 qua lần mở lại. Lịch sử chỉ lưu ID job, loại gói, trạng thái, thời gian; UI hiện 20

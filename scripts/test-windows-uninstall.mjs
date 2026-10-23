@@ -5,10 +5,10 @@ import { spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
-import { root, run, version } from "./setup-build-lib.mjs";
+import { root, run, version, targetRoot } from "./setup-build-lib.mjs";
 
 if (process.platform !== "win32") throw new Error("Windows NSIS QA requires Windows.");
-const generated = path.join(root, "apps/desktop/src-tauri/target/release/nsis/x64");
+const generated = path.join(targetRoot, "release/nsis/x64");
 const template = readFileSync(path.join(generated, "installer.nsi"), "utf8");
 assert(template.includes(`!define VERSION "${version}"`), "Build the current installer first.");
 assert(template.includes("windows\\hooks.nsh") || template.includes("windows/hooks.nsh"), "Production uninstall hooks must be configured.");

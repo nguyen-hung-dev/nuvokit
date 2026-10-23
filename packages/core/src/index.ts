@@ -1,3 +1,7 @@
+import type { ClockRepository } from "./clock";
+export * from "./clock";
+export * from "./updates";
+import type { UpdateAdapter } from "./updates";
 export type ComponentStatus = "ready" | "missing" | "error" | "unknown";
 export type JobStage =
   | "downloading"
@@ -77,6 +81,7 @@ export interface RestorePreview {
   appVersion: string;
   schemaVersion: number;
   historyEntries: number;
+  clockSessions: number | null;
   theme: Preferences["theme"];
 }
 export interface RestoreResult {
@@ -85,6 +90,8 @@ export interface RestoreResult {
 }
 export interface CoreAdapter {
   readonly mode: "desktop" | "preview";
+  readonly clock: ClockRepository;
+  readonly updates: UpdateAdapter;
   scan(): Promise<EnvironmentReport>;
   install(
     packageId: string,
@@ -108,6 +115,7 @@ export interface CoreAdapter {
     gpuStatus: string;
     channelEvents: number;
     themePersistence: boolean;
+    clockPersistence: boolean;
   }): Promise<void>;
 }
 export function coreReady(report: EnvironmentReport): boolean {

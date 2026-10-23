@@ -1,6 +1,8 @@
 # Mô hình plugin đề xuất
 
-Trạng thái: **Đề xuất thiết kế**, chưa có SDK hoặc định dạng gói ổn định.
+Trạng thái: **Gói/API tối thiểu v1 đã chốt nội bộ** theo [0009](decisions/0009-plugin-ui-package-sdk.md).
+Có UI thư viện bản mẫu, SDK client và validator/schema. Chưa có loader, bridge
+native, kho online hoặc plugin thực có thể cài. Xem [đặc tả v1](specs/plugin-package-v1.md).
 
 ## Một app con hoàn chỉnh
 
@@ -19,7 +21,9 @@ góp widget, lệnh nhanh, sự kiện và công cụ cho agent. Không chỉ l�
 | Commands/events/tools | Hợp đồng tích hợp với app khác và agent |
 | Khả năng theo nền tảng | Desktop, web, mobile; nêu phần không hỗ trợ |
 
-Tên field và API chưa được chuẩn hóa; bảng này không phải SDK có thể sử dụng.
+Field thực của v1 ở [JSON Schema](../packages/plugin-sdk/manifest.schema.json).
+Bảng trên còn gồm hướng mở rộng; commands/events liên app và schema/migration của
+plugin chưa nằm trong SDK tối thiểu.
 
 ## Vòng đời
 
@@ -48,5 +52,20 @@ mất dữ liệu toàn workspace. Gỡ phải có lựa chọn giữ/xuất d�
 
 ## Bộ công cụ cho developer về sau
 
-Plugin starter, UI playground, tài liệu API có phiên bản, dữ liệu demo, hướng dẫn
-kiểm tra quyền/tương thích và quy trình xuất bản. Chưa có các công cụ này trong repo.
+Đã có SDK client/schema nội bộ và [tài liệu API v1](specs/plugin-package-v1.md).
+Plugin starter có thể chạy, UI playground, CLI đóng gói/xuất bản và kiểm chứng
+quyền/guest trên host vẫn là phần tiếp theo.
+
+## Đồng hồ tích hợp sẵn
+
+`plugins/clock/src` hiện được bundle cùng app và dùng repository riêng; ba bố cục
+đổi trong Cài đặt Đồng hồ. Đây là module tin cậy của host, chưa phải gói guest
+được cài qua SDK. Các command Clock không mở SQL/shell cho plugin bên ngoài.
+Xem [0010](decisions/0010-clock-layouts-persistence.md) và [đặc tả](specs/clock-v1.md).
+
+## Cập nhật app/plugin — 0.1.4
+
+Theo [0011](decisions/0011-github-signed-updates.md), app EXE dùng updater có chữ
+ký từ GitHub Releases; dev chạy source dùng Git fast-forward với kiểm tra local
+edits. Đồng hồ hiện được bundle nên cập nhật cùng app; gói plugin ngoài chưa có
+loader/cập nhật độc lập. [Luồng cập nhật](specs/updates-v1.md).

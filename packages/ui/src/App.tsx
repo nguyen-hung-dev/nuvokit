@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { UpdateSettings, useUpdates } from "./UpdateSettings";
 import { DataSettings } from "./DataSettings";
+import { Clock, useClock } from "@nuvokit/clock";
+import { PluginWorkspace, type WorkspacePage } from "./PluginWorkspace";
+import brandMark from "../../../design/assets/nuvokit-mark.svg";
 import {
   Activity,
   ArrowDownToLine,
@@ -10,10 +14,13 @@ import {
   ChevronRight,
   CircleAlert,
   CircleHelp,
+  Clock3,
   Cpu,
   Database,
   FileText,
   HardDrive,
+  House,
+  LayoutGrid,
   Layers3,
   LoaderCircle,
   MemoryStick,
@@ -28,6 +35,8 @@ import {
 } from "lucide-react";
 import {
   coreReady,
+  startClock,
+  finishClock,
   formatBytes,
   jobRunning,
   safePercent,
@@ -40,14 +49,22 @@ import {
   type Preferences,
 } from "@nuvokit/core";
 
-type Page = "environment" | "hardware" | "dependencies" | "settings";
+type Page = WorkspacePage | "clock" | "environment" | "hardware" | "dependencies" | "settings";
 const pages = [
+  { id: "home" as const, label: "Tổng quan", icon: House },
+  { id: "library" as const, label: "Thư viện plugin", icon: LayoutGrid },
+  { id: "installed" as const, label: "Đã cài", icon: ArrowDownToLine },
+  { id: "clock" as const, label: "Đồng hồ", icon: Clock3 },
   { id: "environment" as const, label: "Môi trường", icon: Monitor },
   { id: "hardware" as const, label: "Phần cứng", icon: Cpu },
   { id: "dependencies" as const, label: "Thành phần", icon: Box },
   { id: "settings" as const, label: "Cài đặt", icon: Settings2 },
 ];
 const titles: Record<Page, [string, string]> = {
+  clock: ["Đồng hồ", "Tập trung theo nhịp của bạn."],
+  home: ["Không gian của bạn", "Mở những công cụ bạn dùng mỗi ngày."],
+  library: ["Thư viện plugin", "Thêm công cụ phù hợp với cách bạn làm việc."],
+  installed: ["Ứng dụng đã cài", "Những công cụ trong không gian của bạn."],
   environment: ["Môi trường & Phần cứng", "Mọi thứ bạn cần để bắt đầu."],
   hardware: [
     "Hiểu chiếc máy của bạn",
@@ -210,7 +227,13 @@ function ConfirmInstall({
 }
 
 export function App({ adapter }: { adapter: CoreAdapter }) {
-  const [page, setPage] = useState<Page>("environment");
+  const [page, setPage] = useState<Page>("home");
+  const workspacePage = page === "home" || page === "library" || page === "installed" ? page : null;
+  const corePage = !workspacePage && page !== "clock";
+  const clock = useClock(adapter.clock);
+  const updates = useUpdates(adapter.updates);
+  const updateInstalling = updates.phase === "installing";
+  const [clockSettings, setClockSettings] = useState(false);
   const [report, setReport] = useState<EnvironmentReport | null>(null);
   const [scanning, setScanning] = useState(true);
   const [error, setError] = useState("");
@@ -228,6 +251,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
   const announcedReady = useRef(false);
   const ready = report ? coreReady(report) : false;
   const busy = jobRunning(job);
+  const visibleTheme = page === "clock" && clock.state.theme !== "app" ? clock.state.theme : preferences.theme;
 
   const refresh = async () => {
     const current = ++generation.current;
@@ -267,6 +291,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
   useEffect(() => {
     document.documentElement.dataset.theme = preferences.theme;
   }, [preferences.theme]);
+  useEffect(() => { document.title = `NuvoKit — ${pages.find(item => item.id === page)?.label ?? "Không gian của bạn"}`; }, [page]);
   useEffect(() => {
     if (!report || scanning || announcedReady.current) return;
     announcedReady.current = true;
@@ -276,7 +301,20 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
           .uiReady()
           .then(async (verify) => {
             if (!verify) return;
-            if ((await adapter.getStorageInfo()).schemaVersion !== 2) throw new Error("Chưa xác minh được dữ liệu lõi phiên bản 2.");
+            if ((await adapter.getStorageInfo()).schemaVersion !== 3) throw new Error("Chưa xác minh được dữ liệu lõi phiên bản 3.");
+            // --verify-core always uses an isolated profile. Exercise Clock through real IPC.
+            const originalClock = await adapter.clock.load();
+            const runningClock = startClock(originalClock.state, Date.now(), crypto.randomUUID());
+            let clockRevision = await adapter.clock.save(runningClock, originalClock.revision, null);
+            const styledClock = { ...runningClock, layout: "session" as const, theme: "dark" as const };
+            clockRevision = await adapter.clock.save(styledClock, clockRevision, null);
+            const loadedClock = await adapter.clock.load();
+            const completedClock = finishClock(styledClock, Date.now());
+            clockRevision = await adapter.clock.save(completedClock.state, clockRevision, completedClock.completed);
+            const savedClock = await adapter.clock.load();
+            const clockPersistence = loadedClock.state.sessionId === runningClock.sessionId && loadedClock.state.startedAt === runningClock.startedAt && loadedClock.state.layout === "session" && loadedClock.state.theme === "dark" && savedClock.history.some(item => item.id === runningClock.sessionId);
+            await adapter.clock.save(originalClock.state, clockRevision, null);
+            await clock.reload();
             // Explicit --verify-core only: use normal adapters/IPC with a temporary host database.
             const original = await adapter.getPreferences();
             await adapter.setPreferences({ theme: "dark" });
@@ -294,6 +332,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
               gpuStatus: "not-run",
               channelEvents,
               themePersistence,
+              clockPersistence,
             });
             const graphics = await adapter.probeGpu();
             setProbe(graphics);
@@ -302,6 +341,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
               gpuStatus: graphics.status,
               channelEvents,
               themePersistence,
+              clockPersistence,
             });
           })
           .catch((reason) => setError(String(reason)));
@@ -418,7 +458,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
                 {dependency.installable ? (
                   <button
                     className="button secondary compact"
-                    disabled={busy || dataBusy || scanning}
+                    disabled={busy || dataBusy || updateInstalling || scanning}
                     onClick={() => setSelected(dependency)}
                   >
                     <ArrowDownToLine size={16} />
@@ -507,12 +547,10 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
   );
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${workspacePage || page === "clock" ? "plugin-shell" : ""}`} data-clock-theme={page === "clock" ? clock.state.theme === "app" ? preferences.theme : clock.state.theme : undefined}>
       <header className="app-bar">
         <div className="brand">
-          <span className="brand-mark" aria-hidden="true">
-            N
-          </span>
+          <img className="brand-mark" src={brandMark} alt=""/>
           <span>NuvoKit</span>
           <span className="version-pill">CORE PREVIEW</span>
         </div>
@@ -522,22 +560,22 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
           />
           <span className="small muted">
             {adapter.mode === "preview"
-              ? "Bản xem trước · dữ liệu mẫu"
+              ? page === "clock" ? "Đồng hồ · lưu trên trình duyệt" : "Bản xem trước · dữ liệu mẫu"
               : "Không gian cục bộ"}
           </span>
           <button
             className="icon-button"
             aria-label={
-              preferences.theme === "light"
+              visibleTheme === "light"
                 ? "Chuyển sang giao diện tối"
                 : "Chuyển sang giao diện sáng"
             }
-            disabled={savingTheme || dataBusy}
+            disabled={savingTheme || dataBusy || (page === "clock" && (!clock.loaded || !!clock.error))}
             onClick={() =>
-              void changeTheme(preferences.theme === "light" ? "dark" : "light")
+              page === "clock" ? clock.edit({ theme: visibleTheme === "light" ? "dark" : "light" }) : void changeTheme(visibleTheme === "light" ? "dark" : "light")
             }
           >
-            {preferences.theme === "light" ? (
+            {visibleTheme === "light" ? (
               <Moon size={18} />
             ) : (
               <Sun size={18} />
@@ -551,14 +589,15 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
           {pages.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
-              className={`nav-item ${page === id ? "active" : ""}`}
-              disabled={dataBusy}
+              className={`nav-item ${id === "clock" ? "clock-nav" : ""} ${id === "environment" ? "nav-system-start" : ""} ${page === id ? "active" : ""}`}
+              disabled={dataBusy || updateInstalling}
               onClick={() => setPage(id)}
               aria-current={page === id ? "page" : undefined}
               title={label}
             >
               <Icon size={21} />
               <span>{label}</span>
+              {id === "settings" && updates.status?.available && <span className="badge badge-ready small">Mới</span>}
               {page === id && (
                 <ChevronRight size={15} className="nav-chevron" />
               )}
@@ -575,16 +614,16 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
               <span>Lưu trên thiết bị</span>
             </div>
           </div>
-          <span className="sidebar-version">NuvoKit · Core v0.1.3</span>
+          <span className="sidebar-version">NuvoKit · Core v0.1.4</span>
         </div>
       </aside>
-      <main id="main-content" className="main-content">
-        <div className="breadcrumb">
+      <main id="main-content" className={`main-content ${workspacePage || page === "clock" ? "workspace-main" : ""}`}>
+        {corePage && <div className="breadcrumb">
           Không gian cá nhân
           <ChevronRight size={13} />
           <span>{pages.find((item) => item.id === page)?.label}</span>
-        </div>
-        <div className="page-heading">
+        </div>}
+        {corePage && <div className="page-heading">
           <div>
             <h1>{titles[page][0]}</h1>
             <p>{titles[page][1]}</p>
@@ -599,8 +638,8 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
               {scanning ? "Đang kiểm tra" : "Kiểm tra lại"}
             </button>
           )}
-        </div>
-        {adapter.mode === "preview" && (
+        </div>}
+        {adapter.mode === "preview" && corePage && (
           <div className="preview-banner">
             <Monitor size={16} />
             <span>
@@ -622,14 +661,16 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
             </button>
           </div>
         )}
-        {scanning && !report && (
+        <PluginWorkspace page={workspacePage} onNavigate={setPage} onOpenClock={() => setPage("clock")}/>
+        {page === "clock" && <Clock clock={clock} disabled={dataBusy || updateInstalling} openSettings={clockSettings} onSettingsOpened={() => setClockSettings(false)}/>}
+        {corePage && scanning && !report && (
           <div className="loading-state" role="status">
             <LoaderCircle size={28} className="spin" />
             <h2>Đang chuẩn bị không gian…</h2>
             <p>Kiểm tra môi trường và phần cứng của bạn.</p>
           </div>
         )}
-        {!scanning && !report && (
+        {corePage && !scanning && !report && (
           <div className="loading-state">
             <CircleAlert size={30} />
             <h2>Chưa đọc được môi trường</h2>
@@ -851,8 +892,11 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
                     ))}
                   </div>
                 </section>
-                <DataSettings adapter={adapter} installing={busy || savingTheme} onBusy={setDataBusy} onRestored={async (value) => {
+                <section className="panel"><div className="section-heading"><h2><Clock3 size={21}/>Đồng hồ</h2></div><p className="muted">Ba bố cục, giao diện sáng/tối và phiên tập trung của bạn.</p><button className="button secondary" onClick={() => { setClockSettings(true); setPage("clock"); }}><Settings2 size={18}/>Cài đặt Đồng hồ</button></section>
+                <UpdateSettings updates={updates} blocked={busy || dataBusy || savingTheme || clock.pending || !clock.loaded} clockActive={clock.active}/>
+                <DataSettings adapter={adapter} installing={busy || savingTheme || clock.pending || !clock.loaded || updateInstalling} restoreBlocked={clock.active} onBusy={setDataBusy} onRestored={async (value) => {
                   setPreferences(value);
+                  await clock.reload();
                   setHistory(await adapter.getHistory());
                   await refresh();
                 }} />
@@ -864,7 +908,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
                     </h2>
                   </div>
                   <p className="muted">
-                    NuvoKit Core v0.1.3 · bản preview cho Windows 11
+                    NuvoKit Core v0.1.4 · bản preview cho Windows 11
                     x64.
                   </p>
                   <div className="note">
@@ -877,7 +921,7 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
                 </section>
               </>
             )}
-            <footer className="content-footer">
+            {corePage && <footer className="content-footer">
               <span>
                 <span className="connection-dot" />
                 {adapter.mode === "preview"
@@ -886,10 +930,10 @@ export function App({ adapter }: { adapter: CoreAdapter }) {
               </span>
               <span>
                 {adapter.mode === "desktop"
-                  ? `${report.scanMs} ms · Chỉ lưu cài đặt và lịch sử`
+                  ? `${report.scanMs} ms · Dữ liệu lưu trên thiết bị`
                   : "Thiết kế có thể tương tác · Core preview"}
               </span>
-            </footer>
+            </footer>}
           </>
         )}
       </main>

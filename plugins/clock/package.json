@@ -1,0 +1,8 @@
+{
+  "name": "@nuvokit/clock",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/Clock.tsx" },
+  "dependencies": { "@nuvokit/core": "*", "lucide-react": "1.61.0", "react": "19.3.1" }
+}

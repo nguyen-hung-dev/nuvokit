@@ -39,6 +39,7 @@ pub struct RendererResult {
     pub gpu_status: String,
     pub channel_events: u32,
     pub theme_persistence: bool,
+    pub clock_persistence: bool,
 }
 
 fn descendants(system: &System) -> HashSet<Pid> {

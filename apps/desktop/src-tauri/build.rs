@@ -1,6 +1,14 @@
 fn main() {
     tauri_build::try_build(tauri_build::Attributes::new().app_manifest(
         tauri_build::AppManifest::new().commands(&[
+            "update_status",
+            "set_update_channel",
+            "check_update",
+            "download_update",
+            "cancel_update",
+            "install_update",
+            "get_clock",
+            "save_clock",
             "get_storage_info",
             "export_backup",
             "prepare_restore",

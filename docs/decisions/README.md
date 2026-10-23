@@ -13,6 +13,9 @@ quyết định đã chốt. Gợi ý trong tài liệu không tự trở thành
 | [0006](0006-native-setup-release.md) | Duyệt mẫu 1, bootstrapper native + NSIS và phát hành preview `.exe` | Accepted — 23/10/2026 |
 | [0007](0007-windows-uninstall-data.md) | Gỡ qua Windows, giữ dữ liệu mặc định và xác nhận khi xóa | Accepted — 23/10/2026 |
 | [0008](0008-core-data-safety.md) | Backup/restore, migration và kiểm chứng Windows trước mini-app | Accepted — 23/10/2026 |
+| [0009](0009-plugin-ui-package-sdk.md) | Duyệt ba mẫu UI, chuyển bố cục thư viện, gói và SDK tối thiểu v1 | Accepted cho UI/hợp đồng — 23/10/2026 |
+| [0010](0010-clock-layouts-persistence.md) | Đồng hồ tích hợp, ba bố cục/theme, persistence và backup schema 3 | Accepted — 23/10/2026 |
+| [0011](0011-github-signed-updates.md) | Updater ký số qua GitHub Releases; dev qua Git fast-forward | Accepted — 24/10/2026 |
 
 ## Quyết định còn mở
 
@@ -20,7 +23,7 @@ quyết định đã chốt. Gợi ý trong tài liệu không tự trở thành
 - Phạm vi Windows phát hành công khai và thứ tự mở rộng macOS/web; mục tiêu nội bộ
   hiện tại là Windows 11 x64. Mobile chưa thuộc phạm vi hiện tại.
 - Giấy phép lõi, SDK/UI kit và điều khoản đóng góp.
-- Sandbox/bridge, schema và API plugin ổn định.
+- Sandbox/bridge và kiểm chứng host thực thi API plugin v1; API mở rộng/SDK công khai.
 - Nhà cung cấp AI/OCR, sync và mô hình dịch vụ.
 - Tên miền, lịch phát hành và giá.
 

@@ -1,6 +1,6 @@
 # Tài liệu NuvoKit
 
-Cập nhật: **23/10/2026**. Tài liệu sản phẩm trong repo là nguồn làm việc cho phát
+Cập nhật: **24/10/2026**. Tài liệu sản phẩm trong repo là nguồn làm việc cho phát
 triển. Tên và ưu tiên **Windows trước, lõi môi trường/phần cứng trước mini-app** đã
 chốt. Đã triển khai Core v1 nội bộ bằng React/TypeScript + Tauri/Rust + SQLite;
 đã có preview 0.1.3 với wizard mẫu 1, trình gỡ, backup/restore và migration dữ liệu. Giấy phép/MVP mini-app và lịch phát
@@ -11,6 +11,9 @@ hành ổn định vẫn còn mở.
 | [Product](product.md) | Bài toán, trải nghiệm, phạm vi và câu hỏi mở |
 | [Architecture](architecture.md) | Stack lõi đã dùng, UI/adapter và thiết kế mở rộng |
 | [Plugins](plugins.md) | App con, quyền, vòng đời và tích hợp |
+| [Plugin package/SDK v1](specs/plugin-package-v1.md) | Hợp đồng đã chốt, schema/validator/client và giới hạn runtime |
+| [Cập nhật v1](specs/updates-v1.md) | Updater có chữ ký qua GitHub, kênh và dev Git |
+| [Đồng hồ v1](specs/clock-v1.md) | Module tích hợp, ba bố cục/theme, phiên và dữ liệu |
 | [50 module](module-catalog.md) | Danh mục dài hạn và ưu tiên đề xuất |
 | [Roadmap](roadmap.md) | Lõi Windows đầu tiên, các giai đoạn và điều kiện đi tiếp |
 | [Design](../design/README.md) | Brief, prompt và thư mục ảnh mockup giao diện |

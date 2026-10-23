@@ -1,5 +1,10 @@
 # Isolated QA fixtures
 
+Plugin-library UI uses a labelled in-memory demonstration catalogue in the normal
+app. `npm test` covers SDK/manifest/catalog contracts; interaction/visual evidence
+is recorded in `docs/verification/plugin-ui-sdk-v1.md` and root `design-qa.md`.
+Install/remove there never invoke the native installer or load external code.
+
 - `data-settings.html` / `.tsx`: browser-only synthetic adapter for the production
   Settings UI. No native commands or real files. Open through the Vite dev server
   using `/@fs/<absolute-repo-path>/qa/data-settings.html`; use a separate QA port if
@@ -24,3 +29,7 @@ passes. `node scripts/run-windows-sandbox.mjs online prepare` only creates input
 
 Runtime files, snapshots, captured binaries and results stay in ignored `output/`.
 Never install/uninstall the real host NuvoKit or delete its AppData for QA.
+
+Update UI fixture: `/@fs/E:/product/nuvokit/qa/updates.html` on the local Vite server.
+Uses synthetic metadata/download/signature failures, busy/Clock guards and a fake
+install counter; it never downloads software or invokes native commands.

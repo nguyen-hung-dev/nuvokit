@@ -8,6 +8,12 @@ Prompt vòng bộ cài môi trường được lưu riêng tại
 [windows-setup-prompts.md](windows-setup-prompts.md), gồm ràng buộc chung,
 đoạn riêng từng hướng và metadata kết quả. Mẫu wizard đã được duyệt ở lượt tiếp theo; các phương án khác vẫn `review`.
 
+Ba ảnh app chính/thư viện plugin ngày 23/10/2026 lưu prompt tại
+[plugin-library-prompts.md](plugin-library-prompts.md); [brief/review](plugin-library.md).
+
+Ba ảnh plugin Đồng hồ ngày 23/10/2026 lưu tại
+[clock-plugin-prompts.md](clock-plugin-prompts.md); [brief/review](clock-plugin.md).
+
 ## Mẫu prompt
 
 ```text

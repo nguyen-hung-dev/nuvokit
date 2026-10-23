@@ -126,6 +126,12 @@ Wizard đã triển khai sau duyệt. Xem [bằng chứng 0.1.1](verification/wi
 
 ## Kiểm chứng trước giai đoạn mini-app
 
+- [x] Duyệt ba mẫu, triển khai Tổng quan và thư viện chuyển lưới/danh sách có chi tiết.
+  Các thao tác plugin là bản mẫu trong phiên, chưa cài gói bên ngoài.
+- [x] Chốt [gói/API v1](specs/plugin-package-v1.md), schema/validator và SDK client tối thiểu.
+- [ ] PoC guest/bridge và một mini-app thực: cài/cập nhật/gỡ, quyền, cô lập,
+  lifecycle, quota, dữ liệu/backup và rollback trước khi mở SDK ngoài.
+
 - [ ] Chốt người dùng đầu tiên và quy trình đầu tiên.
 - [ ] So sánh trải nghiệm trên vài app hiện có; ghi bằng chứng dùng thử.
 - [ ] Viết tiêu chí hoàn thành cho quy trình đã chọn, kèm trạng thái lỗi/khôi phục.
@@ -133,8 +139,24 @@ Wizard đã triển khai sau duyệt. Xem [bằng chứng 0.1.1](verification/wi
 - [ ] Ghi quyết định MVP vào decision log trước khi coi là đã chọn.
 - [ ] Chọn giấy phép, điều khoản đóng góp và kênh bảo mật trước phát hành công khai.
 
+## Đồng hồ tích hợp — source chưa phát hành
+
+- [x] Duyệt cả ba ảnh, thêm bộ chọn bố cục và theme riêng.
+- [x] Tập trung/đếm ngược/bấm giờ, pause/resume, xác nhận kết thúc và lịch sử.
+- [x] Repository SQLite/IndexedDB, chống ghi đè, backup format 2/schema 3 và giữ dữ liệu bản cũ.
+- [ ] Guest/bridge, tải và cập nhật gói bên ngoài vẫn theo cổng kiểm chứng phía trên.
+
+Xem [đặc tả Đồng hồ](specs/clock-v1.md); phần này không tự chốt toàn bộ MVP Sách/Công việc.
+
 ## Chỉ số nên đo
 
 Cài thành công; thời gian đến việc đầu tiên; quay lại trong tuần; quy trình liên app
 được dùng; lỗi/mất dữ liệu; developer tạo plugin được; nhu cầu trả phí cụ thể. Sao
 GitHub là một tín hiệu quan tâm bổ sung, không thay thế các chỉ số này.
+
+## Cập nhật app/plugin — 0.1.4
+
+Theo [0011](decisions/0011-github-signed-updates.md), app EXE dùng updater có chữ
+ký từ GitHub Releases; dev chạy source dùng Git fast-forward với kiểm tra local
+edits. Đồng hồ hiện được bundle nên cập nhật cùng app; gói plugin ngoài chưa có
+loader/cập nhật độc lập. [Luồng cập nhật](specs/updates-v1.md).

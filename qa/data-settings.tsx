@@ -11,7 +11,7 @@ let preferences: Preferences = { theme: "light" };
 let token: string | null = null;
 let sequence = 0;
 const info: StorageInfo = {
-  schemaVersion: 2, databaseBytes: 65536, packageBytes: 531275,
+  schemaVersion: 3, databaseBytes: 65536, packageBytes: 531275,
   temporaryBytes: 32768, recoveryBytes: 4096, recoveryCount: 1,
   lastBackupAt: null, dataDirectory: "Dữ liệu tổng hợp cho QA · không đọc AppData", temporarySession: false,
 };
@@ -32,7 +32,7 @@ const adapter: CoreAdapter = {
   prepareRestore: async () => {
     await event("prepare"); if (qa.cancelledImport) return null;
     token = "fixture-" + ++sequence;
-    return { token, fileName: "NuvoKit-fixture.nuvobak", createdAt: "2026-10-23T00:00:00Z", appVersion: "0.1.3", schemaVersion: 2, historyEntries: 30, theme: "dark" };
+    return { token, fileName: "NuvoKit-fixture.nuvobak", createdAt: "2026-10-23T00:00:00Z", appVersion: "0.1.3", schemaVersion: 3, historyEntries: 30, clockSessions: 0, theme: "dark" };
   },
   discardRestore: async (id) => { qa.events.push("discard"); if (token === id) token = null; },
   restoreBackup: async (id) => {

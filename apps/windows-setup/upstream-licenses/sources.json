@@ -19,5 +19,9 @@
     "source": "https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt",
     "sourceCode": "https://github.com/servo/stylo/tree/572ecba2d1600e7c3d490586692a209faf703baa/selectors",
     "sha256": "511572600344fee3d4196a405ef6b95c1775037234a64331d65383bf99eb54ca"
+  },
+  "tauri-plugin-2.7.2": {
+    "source": "https://raw.githubusercontent.com/tauri-apps/tauri/59b63ab500da9859f12d8888c3298bc29bba0b92/LICENSE-MIT",
+    "sha256": "9dd42ea92cff2ede5cd477cbfcce051b2d0115c0ac7f368ee88cb545055dff1d"
   }
 }

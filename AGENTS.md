@@ -30,6 +30,10 @@
 - Installer hashes must come from the NSIS compile-time capture. Tauri restores
   the standalone binary's bundle marker after packaging; hashing that file alone
   does not verify the executable actually shipped in the NSIS payload.
+- All three app/plugin-library mocks are approved under decision `0009`. Keep the
+  grid/detail switch and shared filters. Plugin actions are session-only UI demos
+  until a verified host exists. Follow `docs/specs/plugin-package-v1.md`; never
+  mistake the client SDK or manifest validation for host permission enforcement.
 
 ## CodeGraph
 
@@ -81,3 +85,18 @@ for literal text, documentation, configuration, or a file already being edited.
   appropriate paths from the index with `git rm --cached`; report the groups removed.
 - Use specific staged paths and review the staged diff before committing.
 - Do not add a remote or push as part of a local commit request.
+
+## Bundled Clock
+
+- All three Clock mockups are approved; follow decision 0010 and docs/specs/clock-v1.md.
+- Clock is a trusted bundled module, not evidence that the external SDK host exists.
+- Preserve timestamp-based sessions across layout/theme changes, transactional history,
+  revision conflict checks and legacy backup compatibility. Current source uses SQLite
+  schema 3/backup format 2; use isolated temporary profiles for native QA.
+
+## Updates
+
+- Follow decision 0011 and docs/specs/updates-v1.md. Keep signature + signed-version
+  verification, pinned HTTPS release sources, no downgrades and pre-install recovery.
+- Never commit signing keys/passwords or release binaries. Use isolated profiles for
+  --verify-update/--verify-update-local; do not update the owner's installed app for QA.

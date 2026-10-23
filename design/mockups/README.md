@@ -3,6 +3,7 @@
 Thư mục chứa ảnh thiết kế giao diện NuvoKit do AI/người thiết kế tạo có chủ đích.
 Đã có hai ảnh D02 và ba hướng bộ cài, tạo ngày **22/10/2026** bằng built-in `image_gen`.
 Mọi thông tin máy trong ảnh là dữ liệu giả lập.
+Ngày **23/10/2026** bổ sung ba ảnh app chính/thư viện plugin bằng built-in `image_gen`.
 
 | ID / Ảnh | Màn hình / Trạng thái | Theme / Kích thước thực | Trạng thái | Prompt |
 | --- | --- | --- | --- | --- |
@@ -47,6 +48,57 @@ SHA-256:
 - Ảnh 1: `b79112eb6ba6fd8da16e9349d96efdcb61aa6d8821164b8030b43506dfb9aa7b`.
 - Ảnh 2: `74a8f6c09d3de513c88a97489ebf48511550b3aba4a23009070be18b8bd463fd`.
 - Ảnh 3: `9bce9e34c1ee2fa61ab0888278de3b305ef6cef494123784b896e6c87dc1fdce`.
+
+## App chính & thư viện plugin
+
+Ba ảnh dưới đã hiển thị độc lập theo đúng thứ tự 1 → 2 → 3 trong cuộc trao đổi.
+Tạo ngày **23/10/2026**, dùng D02 light làm ảnh đầu vào, cùng theme sáng. Mọi
+plugin/trạng thái/quyền trong ảnh là minh họa; chưa có runtime/kho plugin hoạt động.
+Xem [brief và điểm cần tinh chỉnh](../plugin-library.md).
+
+| Mẫu / Ảnh | Màn hình | Kích thước thực | Trạng thái | Prompt |
+| --- | --- | --- | --- | --- |
+| [1 · windows-app-home-light-v01](windows-app-home-light-v01.png) | App chính, mở ứng dụng và tiếp tục gần đây | 1505 × 1045 px | approved | [Nguồn](../plugin-library-prompts.md#windows-app-home-light-v01) |
+| [2 · windows-plugin-library-grid-light-v01](windows-plugin-library-grid-light-v01.png) | Thư viện khám phá, dạng lưới | 1505 × 1045 px | approved | [Nguồn](../plugin-library-prompts.md#windows-plugin-library-grid-light-v01) |
+| [3 · windows-plugin-library-details-light-v01](windows-plugin-library-details-light-v01.png) | Danh sách và vùng chi tiết/quyền trước cài | 1505 × 1045 px | approved | [Nguồn](../plugin-library-prompts.md#windows-plugin-library-details-light-v01) |
+
+Chủ dự án duyệt cả ba và yêu cầu triển khai nút chuyển thư viện; xem
+[0009](../../docs/decisions/0009-plugin-ui-package-sdk.md). UI source đã có, thao tác
+plugin vẫn là bản mẫu trong phiên; chưa có host cài/chạy gói ngoài.
+
+Đã kiểm tra trực quan: chữ đọc được, đủ vùng chính và CTA. Icon/màu ở mẫu 3 có
+khác mẫu 1/2; cần thống nhất khi chốt UI. Chưa có ảnh dark hoặc trạng thái lỗi.
+Khung công cụ trả về khác khung đề nghị, không resize/kéo giãn ảnh.
+
+SHA-256:
+
+- Ảnh 1: `efc0b62451d85ddf4ba5709b6c3fe65201a9d38172826060a0992a4c9ccccf7f`.
+- Ảnh 2: `5fa753fd39f0e29bbcfaec844f12cbb2a786c5d40bfabc2c219a3bed33cf5499`.
+- Ảnh 3: `01d55797b892d92cd41a5a6f165eef59d70be8c8b339c91c5eb6c733ccfb437c`.
+
+## Plugin Đồng hồ — approved
+
+Tạo **23/10/2026** bằng built-in `image_gen`, dùng ảnh app home light đã duyệt làm
+đầu vào. Ba kết quả đã hiển thị độc lập theo thứ tự dưới; mọi phiên/lịch sử là
+dữ liệu tổng hợp. Chủ dự án duyệt cả ba ngày 23/10/2026; đã triển khai module
+Đồng hồ tích hợp với bộ chọn bố cục/theme, chưa phát hành.
+[Brief và nhận xét](../clock-plugin.md).
+
+| Mẫu / Ảnh | Màn hình / Trạng thái | Theme / Kích thước thực | Trạng thái | Prompt |
+| --- | --- | --- | --- | --- |
+| [1 · windows-clock-focus-light-v01](windows-clock-focus-light-v01.png) | Tập trung, sẵn sàng bắt đầu 25:00 | Light · 1505 × 1045 px | approved | [Nguồn](../clock-plugin-prompts.md#windows-clock-focus-light-v01) |
+| [2 · windows-clock-session-light-v01](windows-clock-session-light-v01.png) | Phiên 25 phút đang chạy, còn 18:42 | Light · 1505 × 1045 px | approved | [Nguồn](../clock-plugin-prompts.md#windows-clock-session-light-v01) |
+| [3 · windows-clock-countdown-dark-v01](windows-clock-countdown-dark-v01.png) | Đếm ngược chưa chạy, đặt 00:10:00 | Dark · 1505 × 1045 px | approved | [Nguồn](../clock-plugin-prompts.md#windows-clock-countdown-dark-v01) |
+
+Đã kiểm tra trực quan: trạng thái timer và CTA phù hợp, chữ đọc được, không cắt
+thao tác chính. Kiểu chọn tab khác giữa mẫu sáng/tối và cần thống nhất khi triển
+khai. Khung thực khác khung yêu cầu; không resize/kéo giãn ảnh.
+
+SHA-256:
+
+- Ảnh 1: `ac38a294b30d7f8e184fd8aef641a222e2289cdc5ef2299cfe4192460b756067`.
+- Ảnh 2: `93f44652c73f800e79084cbe76de27ee79addaa8c2043948b6bfdb2ec8bd4cfb`.
+- Ảnh 3: `0dc9016ccb4cdf8ba5fc386e6b1d9069227f80aed018af0e220fd8fe6d6662b6`.
 
 ## Khi thêm ảnh
 
